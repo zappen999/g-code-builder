@@ -1,0 +1,21 @@
+{
+  "name": "gcode-builder",
+  "version": "0.1.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "./node_modules/.bin/ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/zappen999/gcode-builder.git"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "homepage": "https://bitbucket.org/zappen999/gcode-builder#readme",
+  "devDependencies": {
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  }
+}
