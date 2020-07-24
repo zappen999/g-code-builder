@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "./node_modules/.bin/ts-node src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/.bin/mocha --require ts-node/register --recursive --extension ts './src/**/*.test.ts' --watch"
   },
   "repository": {
     "type": "git",
@@ -15,6 +15,11 @@
   "license": "GPL-3.0",
   "homepage": "https://bitbucket.org/zappen999/gcode-builder#readme",
   "devDependencies": {
+    "@types/chai": "^4.2.12",
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^14.0.25",
+    "chai": "^4.2.0",
+    "mocha": "^8.0.1",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   }

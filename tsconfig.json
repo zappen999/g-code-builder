@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./src",
+		"lib": [
+			"es2015",
+			"es2016",
+			"es6",
+			"dom"
+		],
+		"target": "es2015",
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"preserveConstEnums": true,
+		"importsNotUsedAsValues": "error",
+		"strict": true
+	}
+}
