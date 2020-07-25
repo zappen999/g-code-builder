@@ -1,5 +1,5 @@
 import type { Plane, Dir, CoordinateSystem, Unit } from './enums';
-import type { XYZ } from './types';
+import type { XYZ, Point } from './types';
 import {
 	Command,
 	PlaneCommand,
@@ -9,10 +9,17 @@ import {
 	ChangeToolCommand,
 	CommentCommand,
 	StartSpindleCommand,
+	StopSpindleCommand,
+	ArcCommand,
+	MoveCommand,
+	MoveRapidCommand,
+	LinearFeedRateCommand,
+	RapidFeedRateCommand,
+	EndCommand,
 } from './command';
 
 export class Block {
-	protected commands: Command<any>[];
+	protected commands: Command<unknown>[];
 
 	constructor() {
 		this.commands = [];
@@ -60,6 +67,71 @@ export class Block {
 		return this;
 	}
 
+	setLinearFeedrate(feedrate: number): Block {
+		const cmd = new LinearFeedRateCommand(feedrate);
+		this.commands.push(cmd);
+		return this;
+	}
+
+	setRapidFeedrate(feedrate: number): Block {
+		const cmd = new RapidFeedRateCommand(feedrate);
+		this.commands.push(cmd);
+		return this;
+	}
+
+	moveRapid(to: XYZ, feedrate?: number): Block {
+		const cmd = new MoveRapidCommand({ ...to, feedrate });
+		this.commands.push(cmd);
+		return this;
+	}
+
+	move(to: XYZ, feedrate?: number): Block {
+		const cmd = new MoveCommand({ ...to, feedrate });
+		this.commands.push(cmd);
+		return this;
+	}
+
+	arc(arg: {
+		dir: Dir,
+		end: Point,
+		around: Point, // offset to center relative to start (current) position.
+		feedrate?: number
+	}): Block {
+		const cmd = new ArcCommand(arg);
+		this.commands.push(cmd);
+		return this;
+	}
+
+	// TODO: Implement this when getting tired of using 'arc' function.
+	arcByRadius(arg: {
+		dir: number | 'tangent',
+		rotation: Dir,
+		radius: number,
+		angle: number,
+	}): Block {
+		// Distance between start point and center point should be equal to the
+		// distance between end point and center point.
+		//
+		// Center point should be between start and end.
+		// We know starting point.
+		// We don't know the ending point.
+		//
+		// Calc the ending point by start point + radius + angle
+		return this;
+	}
+
+	stopSpindle(): Block {
+		const cmd = new StopSpindleCommand();
+		this.commands.push(cmd);
+		return this;
+	}
+
+	end (): Block {
+		const cmd = new EndCommand();
+		this.commands.push(cmd);
+		return this;
+	}
+
 	///////////////
 	//  Editing  //
 	///////////////
@@ -71,9 +143,9 @@ export class Block {
 	}
 
 	// NOTE: Only usable when using absolute positioning
-	editMove(to: XYZ): void {
+	editMoveRelative(to: XYZ): void {
 		for (const cmd of this.commands) {
-			cmd.move(to);
+			cmd.moveRelative(to);
 		}
 	}
 
@@ -87,13 +159,19 @@ export class Block {
 		return clone;
 	}
 
-	addCommand (command: Command<any>): void {
+	addBlock (block: Block): void {
+		for (const cmd of block.commands) {
+			this.commands.push(cmd);
+		}
+	}
+
+	addCommand (command: Command<unknown>): void {
 		this.commands.push(command);
 	}
 
-	toString(): string {
+	toString(precision = 4): string {
 		return this.commands
-			.map(command => command.toString())
+			.map(command => command.toString(precision))
 			.join('\n');
 	}
 }

@@ -3,3 +3,8 @@ export interface XYZ {
 	y?: number;
 	z?: number;
 }
+
+export interface Point {
+	x: number;
+	y: number;
+}

@@ -4,6 +4,7 @@ import { Plane, Unit, CoordinateSystem, Dir } from './enums';
 
 describe('Block', () => {
 	let block: Block;
+
 	beforeEach(() => {
 		block = new Block();
 	});
@@ -75,10 +76,17 @@ describe('Block', () => {
 		});
 	});
 
-	describe('Scale', () => {
-		it('should scale all commands', () => {
-
-		});
-	});
+	// describe('Arc by radius', () => {
+	// 	it('should calculate the end and center points', () => {
+	// 		block!.arcByRadius({
+	// 			// TODO: We need to know in which direction it should go (angle?).
+	// 			dir: 90,
+	// 			rotation: Dir.CW,
+	// 			radius: 40,
+	// 			angle: 90,
+	// 		});
+	// 		expect(block!.toString()).to.equal('G3 X59.7000 Y0.0000 I29.8500 J0.0000');
+	// 	});
+	// });
 });
 
