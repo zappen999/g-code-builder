@@ -76,7 +76,8 @@ export class BoundedBlock extends Block {
 		} else if (outOfBoundsX || outOfBoundsY) {
 			return (outOfBoundsX || outOfBoundsY) as Point;
 		} else if (outOfBounds) {
-			throw new Error('what');
+			console.log('WHAT?');
+			// throw new Error('what');
 		}
 
 		return null;
@@ -116,7 +117,8 @@ export class BoundedBlock extends Block {
 		const newPos = this.getNewPosition(to);
 
 		if (this.getOutOfBoundPosition(newPos)) {
-			throw new Error(`Moved out of bounds: X${newPos.x} Y${newPos.y}`);
+			console.log(`MOVED OUT OF BOUNDS: X${newPos.x} Y${newPos.y}`);
+			// throw new Error(`Moved out of bounds: X${newPos.x} Y${newPos.y}`);
 		}
 	}
 
@@ -130,7 +132,7 @@ export class BoundedBlock extends Block {
 	// TODO: No support for Z position
 	updatePosition (newPosition: XYZ): void {
 		const newPos = this.getNewPosition(newPosition);
-		console.log('Moving machine', {from: this.pos, to: newPos});
+		// console.log('Moving machine', {from: this.pos, to: newPos});
 		this.pos = new Point(newPos.x, newPos.y);
 	}
 }

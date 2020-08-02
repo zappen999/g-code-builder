@@ -1,5 +1,5 @@
 import { BaseFrontEngrave, DEFAULT_MACHINE_PARAMS } from './base';
-import { BoundedBlock, Block, Point } from '../../lib';
+import { Block, Point } from '../../lib';
 
 import type { MachineParams, FrontParams } from '../types';
 
@@ -24,113 +24,159 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 	}
 
 	getPatternBlock (): Block {
-		const {
-			width,
-			height,
-			patternWidth,
-			patternHeightMultiplier
-		} = this.frontParams;
-		const block = new BoundedBlock(width, height);
+		const leftLeaning = this.makeZigZag('left');
+		const rightLeaning = this.makeZigZag('right');
 
-		const xStep = -patternWidth;
-		const xForHeight = height / patternHeightMultiplier;
+		leftLeaning.addBlock(rightLeaning);
+		return leftLeaning;
+	}
 
-		let direction: 'up' | 'down' = 'down';
-		let i = 0;
+	makeZigZag (leaning: 'left' | 'right'): Block {
+		const block = new Block();
+		const isLeft = leaning === 'left';
 
-		while (1) {
-			block.comment(`-------- ${direction.toUpperCase()} ---------`);
+		let isUpper = true;
 
-			const xOffset = i * xStep;
-			const xStepBottomOffset = xOffset + xForHeight;
-			const xStepTopOffset = xOffset;
+		const upperPoints = this.getUpperPoints();
+		const lowerPoints = this.getLowerPoints();
 
-			if (direction === 'down') {
-				const draftMove = new Point(xStepBottomOffset, -height);
-				const { corrected, to } = block.checkMove(draftMove);
+		const getNextLowerPoint = () => {
+			const lp = lowerPoints.shift();
 
-				if (corrected) {
-					if (to.isEqual(block.pos)) {
-						console.log('bounded to same pos, moving one step to the left');
-						this.travel(block, new Point(xOffset - patternWidth, 0));
-					} else {
-						block.comment('Doing bounded move');
-						block.move(to);
-						block.comment('Moving to next top');
-						this.travel(block, new Point(xOffset - patternWidth, 0));
-					}
-				} else {
-					block.comment('Full down cut');
-					block.move(to);
-					block.comment('Moving to next bottom from down move');
-					this.travel(block, new Point(xStepBottomOffset - patternWidth, -height));
-					direction = 'up';
-				}
-			} else {
-				const draftMove = new Point(xStepTopOffset, 0);
-				const { corrected, to } = block.checkMove(draftMove);
-
-				if (corrected) {
-					if (to.isEqual(block.pos)) {
-						block.comment('Done cutting since we are bounded in bottom left corner');
-						this.travel(block, new Point(0, 0));
-						break;
-					} else {
-						block.comment('Doing bounded move upwards');
-						const from = block.pos;
-						block.move(to);
-						block.comment('Moving to next bottom from upward move');
-
-						const spaceLeft = width + from.x;
-
-						if (spaceLeft > patternWidth) {
-							this.travel(
-								block,
-								new Point(from.x - patternWidth, -height)
-							);
-						} else {
-							block.comment(
-								'Theres no space left for another pass'
-							);
-							break;
-						}
-					}
-				} else {
-					block
-						.comment('Full up cut')
-						.move(to);
-
-					const draftTravel = new Point(
-						xStepTopOffset - patternWidth,
-						0,
-					);
-
-					const {
-						corrected: travelCorrected,
-					} = block.checkMove(draftTravel);
-
-					if (travelCorrected) {
-						block.comment('Cannot move to next top position, move down to next');
-						this.travel(
-							block,
-							new Point(xStepBottomOffset - patternWidth, -height)
-						);
-					} else {
-						block.comment('Moving to next top');
-						this.travel(
-							block,
-							new Point(xStepTopOffset - patternWidth, 0)
-						);
-						direction = 'down';
-					}
-				}
+			if (!lp) {
+				return;
 			}
 
-			i++;
+			return isLeft ? lp : this.mirrorPointVertically(lp);
+		};
+
+		const getNextUpperPoint = () => {
+			const up = upperPoints.shift();
+
+			if (!up) {
+				return
+			}
+
+			return isLeft ? up : this.mirrorPointVertically(up);
+		};
+
+		while (upperPoints.length && lowerPoints.length) {
+			if (isUpper) {
+				const upperTravel = getNextUpperPoint();
+				console.log({ upperTravel });
+
+				if (upperTravel) this.travel(block, upperTravel);
+
+				const lowerCut = getNextLowerPoint();
+				console.log({ lowerCut });
+
+				if (lowerCut) block.move(lowerCut);
+			} else {
+				const lowerTravel = getNextLowerPoint();
+				console.log({ lowerTravel });
+
+				if (lowerTravel) this.travel(block, lowerTravel);
+
+				const upperCut = getNextUpperPoint();
+				console.log({ upperCut });
+
+				if (upperCut) block.move(upperCut);
+
+			}
+
+			isUpper = !isUpper;
 		}
 
-		this.travel(block, new Point(0, 0));
-
 		return block;
+	}
+
+	mirrorPointVertically (p: Point): Point {
+		const { height } = this.frontParams;
+		return new Point(p.x, -height - p.y);
+	}
+
+	getUpperPoints(): Point[] {
+		const { width, height, patternWidth } = this.frontParams;
+		const points: Point[] = [];
+
+		let upperX = 0;
+		let upperY = 0;
+
+		for (let i = 0;; i++) {
+			if (upperX < width && upperX + patternWidth > width) {
+				// No overflow, but will be with this step, how much?
+				const overflowDis = upperX + patternWidth - width;
+
+				// Add the amount that fits onto X
+				upperX += width - upperX;
+
+				// Add the overflow to Y
+				// TODO: Is this safe? Maybe overflowing here too?
+				upperY += this.getY(overflowDis);
+			} else if (upperX + patternWidth > width) {
+				// It overflows, but it aint the first time.
+				const nextUpperY = upperY + this.getY(patternWidth);
+
+				if (nextUpperY < height) {
+					upperY = nextUpperY;
+				} else {
+					break;
+				}
+			} else { // No overflow
+				upperX += patternWidth;
+			}
+
+			points.push(new Point(-upperX, -upperY));
+		}
+
+		return points;
+	}
+
+
+	getLowerPoints(): Point[] {
+		const { width, height, patternWidth } = this.frontParams;
+		const points: Point[] = [];
+
+		let lowerX = 0;
+		let lowerY = 0;
+
+		const yDis = this.getY(patternWidth);
+
+		// Lower
+		for (let i = 0;; i++) {
+			if (lowerY < height && lowerY + yDis > height) {
+				// No overflow, but will be with this step, how much?
+				const overflowDis = lowerY + yDis - height;
+
+				// Add the amount that fits onto Y
+				lowerY += height - lowerY;
+
+				// Add the overflow to X
+				lowerX += this.getX(overflowDis);
+			} else if (lowerY + yDis > height) {
+				// It overflows, but it aint the first time.
+				const nextLowerX = lowerX + this.getX(yDis);
+
+				if (nextLowerX < width) {
+					lowerX = nextLowerX;
+				} else {
+					break;
+				}
+			} else { // No overflow
+				lowerY += yDis;
+			}
+
+			points.push(new Point(-lowerX, -lowerY));
+		}
+
+		return points;
+	}
+
+	getX (y: number): number {
+		return y / this.frontParams.patternHeightMultiplier;
+	}
+
+	getY (x: number): number {
+		return x * this.frontParams.patternHeightMultiplier;
 	}
 }
