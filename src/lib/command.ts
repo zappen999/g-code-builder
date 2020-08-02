@@ -1,4 +1,5 @@
-import type { XYZ, Point } from './types';
+import type { XYZ } from './types';
+import type { Point } from './point';
 import { Plane, Unit, Dir, CoordinateSystem } from './enums';
 import { isSet } from './helpers';
 

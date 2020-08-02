@@ -1,5 +1,6 @@
 import type { Plane, Dir, CoordinateSystem, Unit } from './enums';
-import type { XYZ, Point } from './types';
+import type { XYZ } from './types';
+import type { Point } from './point';
 import {
 	Command,
 	PlaneCommand,

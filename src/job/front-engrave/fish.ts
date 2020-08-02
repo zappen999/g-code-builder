@@ -1,5 +1,5 @@
 import { BaseFrontEngrave, DEFAULT_MACHINE_PARAMS } from './base';
-import { Block, Dir } from '../../lib';
+import { Block, Dir, Point } from '../../lib';
 
 import type { MachineParams, FrontParams } from '../types';
 import { FitDimension } from '../enums';
@@ -56,14 +56,14 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 							.comment('Make starting half arc')
 							.arc({
 								dir: Dir.CW,
-								end: {
-									x: colOffset,
-									y: -(pSizeHalf * (row - 1)),
-								},
-								around: {
-									x: 0,
-									y: pSizeHalf,
-								},
+								end: new Point(
+									colOffset,
+									-(pSizeHalf * (row - 1))
+								),
+								around: new Point(
+									0,
+									pSizeHalf,
+								),
 								feedrate: this.machineParams.feedrate,
 							});
 					} else if (isLastColumn) {
@@ -71,14 +71,14 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 							.comment('Make ending half arc')
 							.arc({
 								dir: Dir.CW,
-								end: {
-									x: -(pSize * col),
-									y: -(pSizeHalf * row),
-								},
-								around: {
-									x: -pSizeHalf,
-									y: 0,
-								},
+								end: new Point(
+									-(pSize * col),
+									-(pSizeHalf * row),
+								),
+								around: new Point(
+									-pSizeHalf,
+									0,
+								),
 								feedrate: this.machineParams.feedrate,
 							});
 					}
@@ -89,14 +89,14 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 						.comment(`Full arc WITH${isRowOffset ? '' : 'OUT'} offset`)
 						.arc({
 							dir: Dir.CW,
-							end: {
-								x: -(pSize * col) + colOffset,
-								y: -(pSizeHalf * (row - 1)),
-							},
-							around: {
-								x: -(pSizeHalf),
-								y: 0,
-							},
+							end: new Point(
+								-(pSize * col) + colOffset,
+								-(pSizeHalf * (row - 1)),
+							),
+							around: new Point(
+								-(pSizeHalf),
+								0,
+							),
 							feedrate: this.machineParams.feedrate,
 						});
 				}
