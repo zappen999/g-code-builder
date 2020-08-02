@@ -1,61 +1,11 @@
 import { BaseFrontEngrave, DEFAULT_MACHINE_PARAMS } from './base';
-import { Block, XYZ } from '../../lib';
+import { Block, XYZ, Point, Line } from '../../lib';
 
 import type { MachineParams, FrontParams } from '../types';
 
 export interface RombFrontParams extends FrontParams {
 	patternWidth: number;
 	patternHeightMultiplier: number;
-}
-
-class Point {
-	constructor (
-		public x: number,
-		public y: number
-	) { }
-
-	distanceTo (p: Point): number {
-		return Math.sqrt(
-			Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2)
-		);
-	}
-
-	isEqual (p: Point): boolean {
-		return p.x === this.x && p.y === this.y;
-	}
-}
-
-class Line {
-	constructor (
-		public start: Point,
-		public end: Point
-	) { }
-
-	static getLineIntersection (
-		line1: Line,
-		line2: Line
-	): Point|undefined {
-		// Line1
-		const al1 = line1.end.y - line1.start.y;
-		const bl1 = line1.start.x - line1.end.x;
-		const cl1 = (al1 * line1.start.x) + (bl1 * line1.start.y);
-
-		// Line2
-		const al2 = line2.end.y - line2.start.y;
-		const bl2 = line2.start.x - line2.end.x;
-		const cl2 = al2 * line2.start.x + bl2 * line2.start.y;
-
-		const determinant = al1 * bl2 - al2 * bl1;
-
-		if (determinant === 0) {
-			return undefined; // Lines are parallel
-		}
-
-		return new Point(
-			(bl2 * cl1 - bl1 * cl2)/determinant,
-			(al1 * cl2 - al2 * cl1)/determinant,
-		);
-	}
 }
 
 class BoundedBlock extends Block {
