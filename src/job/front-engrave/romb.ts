@@ -63,7 +63,7 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 				const lowerCut = getNextLowerPoint();
 				console.log({ lowerCut });
 
-				if (lowerCut) block.move(lowerCut);
+				if (lowerCut) block.move(lowerCut, this.machineParams.feedrate);
 			} else {
 				const lowerTravel = getNextLowerPoint();
 				console.log({ lowerTravel });
@@ -73,7 +73,7 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 				const upperCut = getNextUpperPoint();
 				console.log({ upperCut });
 
-				if (upperCut) block.move(upperCut);
+				if (upperCut) block.move(upperCut, this.machineParams.feedrate);
 
 			}
 
