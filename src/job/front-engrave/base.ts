@@ -35,8 +35,11 @@ export abstract class BaseFrontEngrave {
 	getChamferBlock (): Block {
 		const block = new Block();
 
+		block.comment('Start chamfer')
+
+		this.travel(block, new Point(0, 0));
+
 		return block
-			.comment('Start chamfer')
 			.move({ z: 0 })
 			.move({ x: -this.frontParams.width })
 			.move({ y: -this.frontParams.height })
