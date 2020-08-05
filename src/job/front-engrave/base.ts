@@ -15,7 +15,7 @@ import type { FrontParams, MachineParams } from '../types';
 export const DEFAULT_MACHINE_PARAMS = {
 	feedrate: 600,
 	rapidFeedrate: 10000,
-	safeHeight: 10,
+	safeHeight: 5,
 	spindleSpeed: 24000,
 	toolDiameter: 6,
 };
@@ -34,7 +34,7 @@ export abstract class BaseFrontEngrave {
 		return block
 			.moveRapid({ z: this.machineParams.safeHeight })
 			.moveRapid({ x: to.x, y: to.y })
-			.move({ z: depth })
+			.move({ z: -depth }, this.machineParams.feedrate)
 	}
 
 	getChamferBlock (): Block {
@@ -49,7 +49,7 @@ export abstract class BaseFrontEngrave {
 			.move({ y: -this.frontParams.height })
 			.move({ x: 0 })
 			.move({ y: 0 })
-			.moveRapid({ z: this.machineParams.safeHeight * 5 })
+			.moveRapid({ z: this.machineParams.safeHeight * 4 })
 			.comment('End chamfer');
 	}
 
@@ -63,7 +63,7 @@ export abstract class BaseFrontEngrave {
 		const { toolDiameter } = this.machineParams;
 		const toolRadius = toolDiameter / 2;
 
-		this.travel(block, new Point(toolRadius, toolRadius), -16);
+		this.travel(block, new Point(toolRadius, toolRadius), 16);
 
 		return block
 			.move({ x: -this.frontParams.width - toolRadius })
@@ -73,7 +73,6 @@ export abstract class BaseFrontEngrave {
 			.moveRapid({ z: this.machineParams.safeHeight * 5 })
 			.comment('End cutout');
 	}
-
 
 	build (): Program {
 		const program = new Program();
@@ -105,7 +104,7 @@ export abstract class BaseFrontEngrave {
 			.setRapidFeedrate(this.machineParams.rapidFeedrate)
 			.moveRapid({ z: this.machineParams.safeHeight * 5 })
 			.startSpindle(Dir.CW, this.machineParams.spindleSpeed)
-			.move({ x: 0, y: 0, z: 0 })
+			.move({ x: 0, y: 0, z: this.machineParams.safeHeight })
 			.comment(`Machine params: ${JSON.stringify(this.machineParams)}`)
 			.comment(`Front params: ${JSON.stringify(this.frontParams)}`)
 			.comment('End setup');
