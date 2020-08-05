@@ -1,24 +1,25 @@
-import { expect } from 'chai';
 import { RombFrontEngrave } from './romb';
 import * as fs from 'fs';
 
 describe('RombFrontJob', () => {
 	it.only('should work', () => {
+		const horizontalPatternCount = 6;
+		const verticalPatternCount = 2;
+		const width = 597;
+		const height = 381;
+		const patternWidth = width/horizontalPatternCount;
+
 		const rombFrontParams = {
-			width: 600,
-			// width: 400,
-			height: 500,
-			// height: 381,
-			// height: 2200,
+			width,
+			height,
 			chamferEdges: false, // TODO: We want this
 			// Romb front specific:
-			patternWidth: 100, // On horizontal axis
-			patternHeightMultiplier: 2, // width * multiplier
+			patternWidth,
+			patternHeightMultiplier: height/patternWidth / verticalPatternCount,
 		};
 
 		const job = new RombFrontEngrave(rombFrontParams);
 		const program = job.build();
-		// console.log(program.toString());
-		fs.writeFileSync('romb.nc', program.toString());
+		fs.writeFileSync('output/romb.nc', program.toString());
 	});
 });

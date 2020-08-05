@@ -47,7 +47,7 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 				return;
 			}
 
-			return isLeft ? lp : this.mirrorPointVertically(lp);
+			return isLeft ? lp : this.mirrorPointHorzontally(lp);
 		};
 
 		const getNextUpperPoint = () => {
@@ -57,7 +57,7 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 				return
 			}
 
-			return isLeft ? up : this.mirrorPointVertically(up);
+			return isLeft ? up : this.mirrorPointHorzontally(up);
 		};
 
 		while (upperPoints.length && lowerPoints.length) {
@@ -90,9 +90,9 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 		return block;
 	}
 
-	mirrorPointVertically (p: Point): Point {
-		const { height } = this.frontParams;
-		return new Point(p.x, -height - p.y);
+	mirrorPointHorzontally (p: Point): Point {
+		const { width } = this.frontParams;
+		return new Point(-width - p.x, p.y);
 	}
 
 	getUpperPoints(): Point[] {
