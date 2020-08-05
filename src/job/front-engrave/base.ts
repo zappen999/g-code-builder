@@ -17,6 +17,7 @@ export const DEFAULT_MACHINE_PARAMS = {
 	rapidFeedrate: 10000,
 	safeHeight: 10,
 	spindleSpeed: 24000,
+	toolDiameter: 6,
 };
 
 export abstract class BaseFrontEngrave {
@@ -25,11 +26,15 @@ export abstract class BaseFrontEngrave {
 		protected machineParams: MachineParams = DEFAULT_MACHINE_PARAMS,
 	) {}
 
-	travel (block: Block, to: Point): Block {
+	travel (
+		block: Block,
+		to: Point,
+		depth = this.frontParams.engraveDepth
+	): Block {
 		return block
 			.moveRapid({ z: this.machineParams.safeHeight })
 			.moveRapid({ x: to.x, y: to.y })
-			.move({ z: 0 })
+			.move({ z: depth })
 	}
 
 	getChamferBlock (): Block {
@@ -40,7 +45,6 @@ export abstract class BaseFrontEngrave {
 		this.travel(block, new Point(0, 0));
 
 		return block
-			.move({ z: 0 })
 			.move({ x: -this.frontParams.width })
 			.move({ y: -this.frontParams.height })
 			.move({ x: 0 })
@@ -49,14 +53,40 @@ export abstract class BaseFrontEngrave {
 			.comment('End chamfer');
 	}
 
+	// TODO: Set new zero here using probe.
+	// TODO: Make holding tabs?
+	getCutoutBlock (): Block {
+		const block = new Block();
+
+		block.comment('Start cutout')
+
+		const { toolDiameter } = this.machineParams;
+		const toolRadius = toolDiameter / 2;
+
+		this.travel(block, new Point(toolRadius, toolRadius), -16);
+
+		return block
+			.move({ x: -this.frontParams.width - toolRadius })
+			.move({ y: -this.frontParams.height - toolRadius })
+			.move({ x: toolRadius })
+			.move({ y: toolRadius })
+			.moveRapid({ z: this.machineParams.safeHeight * 5 })
+			.comment('End cutout');
+	}
+
+
 	build (): Program {
 		const program = new Program();
 
 		program.addBlock(this.getSetupBlock());
 		program.addBlock(this.getPatternBlock());
 
-		if (this.frontParams.chamferEdges) {
+		if (this.frontParams.doChamferEdges) {
 			program.addBlock(this.getChamferBlock());
+		}
+
+		if (this.frontParams.doCutout) {
+			program.addBlock(this.getCutoutBlock());
 		}
 
 		program.addBlock(this.getTeardownBlock());

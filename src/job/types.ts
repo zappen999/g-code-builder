@@ -3,10 +3,13 @@ export interface MachineParams {
 	rapidFeedrate: number;
 	safeHeight: number;
 	spindleSpeed: number;
+	toolDiameter: number;
 }
 
 export interface FrontParams {
 	width: number;
 	height: number;
-	chamferEdges: boolean;
+	engraveDepth: number;
+	doChamferEdges: boolean;
+	doCutout: boolean;
 }

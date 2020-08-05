@@ -1,14 +1,15 @@
-import { expect } from 'chai';
-import { FishFrontEngrave } from './fish';
+import { FishFrontEngrave, FishFrontParams } from './fish';
 import { FitDimension } from '../enums';
 import * as fs from 'fs';
 
 describe('FishFrontJob', () => {
 	it('should work', () => {
-		const fishFrontParams = {
+		const fishFrontParams: FishFrontParams = {
 			width: 597,
 			height: 381,
-			chamferEdges: true,
+			engraveDepth: 2,
+			doChamferEdges: true,
+			doCutout: true,
 			fitDimension: FitDimension.HORIZONTAL,
 			// fitDimension: FitDimension.VERTICAL,
 			patternRepeatCount: 6,
@@ -16,7 +17,6 @@ describe('FishFrontJob', () => {
 
 		const job = new FishFrontEngrave(fishFrontParams);
 		const program = job.build();
-		console.log(program.toString());
-		fs.writeFileSync('test.nc', program.toString());
+		fs.writeFileSync('output/fish.nc', program.toString());
 	});
 });
