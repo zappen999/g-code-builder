@@ -8,6 +8,7 @@ import {
 	Unit,
 	CoordinateSystem,
 	Dir,
+	Point,
 } from '../../lib';
 import type { FrontParams, MachineParams } from '../types';
 
@@ -23,6 +24,13 @@ export abstract class BaseFrontEngrave {
 		protected frontParams: FrontParams,
 		protected machineParams: MachineParams = DEFAULT_MACHINE_PARAMS,
 	) {}
+
+	travel (block: Block, to: Point): Block {
+		return block
+			.moveRapid({ z: this.machineParams.safeHeight })
+			.moveRapid({ x: to.x, y: to.y })
+			.move({ z: 0 })
+	}
 
 	getChamferBlock (): Block {
 		const block = new Block();

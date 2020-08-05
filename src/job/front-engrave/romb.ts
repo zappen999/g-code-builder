@@ -16,13 +16,6 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 		super(frontParams, machineParams);
 	}
 
-	protected travel(block: Block, to: Point): Block {
-		return block
-			.moveRapid({ z: this.machineParams.safeHeight })
-			.moveRapid({ x: to.x, y: to.y })
-			.move({ z: 0 })
-	}
-
 	getPatternBlock (): Block {
 		const leftLeaning = this.makeZigZag('left');
 		const rightLeaning = this.makeZigZag('right');
