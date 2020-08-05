@@ -12,7 +12,7 @@ describe('RombFrontJob', () => {
 		const rombFrontParams = {
 			width,
 			height,
-			chamferEdges: false, // TODO: We want this
+			chamferEdges: true,
 			// Romb front specific:
 			patternWidth,
 			patternHeightMultiplier: height/patternWidth / verticalPatternCount,
