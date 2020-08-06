@@ -1,20 +1,28 @@
-import { BaseFrontEngrave, DEFAULT_MACHINE_PARAMS } from './base';
-import { Block, Dir, Point } from '../../lib';
+import { BaseFrontEngrave, FrontEngraveParams } from './base';
+import { Program, Block, Dir, Point } from 'lib/index';
 
-import type { MachineParams, FrontParams } from '../types';
-import { FitDimension } from '../enums';
+import type { MachineParams } from 'job/index';
+import { FitDimension } from 'job/index';
 
-export interface FishFrontParams extends FrontParams {
+export interface FishFrontEngraveParams extends FrontEngraveParams {
 	fitDimension: FitDimension;
 	patternRepeatCount: number;
 }
 
 export class FishFrontEngrave extends BaseFrontEngrave {
 	constructor (
-		protected frontParams: FishFrontParams,
-		protected machineParams: MachineParams = DEFAULT_MACHINE_PARAMS,
+		protected machineParams: MachineParams,
+		protected frontParams: FishFrontEngraveParams,
 	) {
-		super(frontParams, machineParams);
+		super(machineParams, frontParams);
+	}
+
+	build (): Program {
+		const program = super.build();
+
+		program.addBlock(this.getPatternBlock());
+
+		return program;
 	}
 
 	getPatternBlock (): Block {
@@ -23,6 +31,7 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 			rows,
 			columns,
 		} = this.getPatternSize();
+		const { engrave } = this.frontParams;
 		const pSizeHalf = pSize / 2;
 
 		const patternBlock = new Block();
@@ -40,19 +49,17 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 				const isFirstColumn = col === 1;
 				const isLastColumn = col === columns;
 
-				const part = new Block();
-
-				part.comment(`POS:${row}X${col}`);
+				patternBlock.comment(`POS:${row}X${col}`);
 
 				if (isFirstColumn) {
-					part
+					patternBlock
 						.comment('Bring down slowly to start cutting')
 						.move({ z: 0 });
 				}
 
 				if (isRowOffset) {
 					if (isFirstColumn) {
-						part
+						patternBlock
 							.comment('Make starting half arc')
 							.arc({
 								dir: Dir.CW,
@@ -64,10 +71,10 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 									0,
 									pSizeHalf,
 								),
-								feedrate: this.machineParams.feedrate,
+								feedrate: engrave.ctrl.feedrate,
 							});
 					} else if (isLastColumn) {
-						part
+						patternBlock
 							.comment('Make ending half arc')
 							.arc({
 								dir: Dir.CW,
@@ -79,13 +86,13 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 									-pSizeHalf,
 									0,
 								),
-								feedrate: this.machineParams.feedrate,
+								feedrate: engrave.ctrl.feedrate,
 							});
 					}
 				}
 
 				if (!(isLastColumn && isRowOffset)) {
-					part
+					patternBlock
 						.comment(`Full arc WITH${isRowOffset ? '' : 'OUT'} offset`)
 						.arc({
 							dir: Dir.CW,
@@ -97,17 +104,17 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 								-(pSizeHalf),
 								0,
 							),
-							feedrate: this.machineParams.feedrate,
+							feedrate: engrave.ctrl.feedrate,
 						});
 				}
 
 				if (isLastRow && isLastColumn) {
-					part
+					patternBlock
 						.comment('All rows and cols finished, go to origin')
 						.moveRapid({ z: this.machineParams.safeHeight })
 						.moveRapid({ x: 0, y: 0 });
 				} else if (isLastColumn) {
-					part
+					patternBlock
 						.comment(`End of cols, move to next row: ${isRowOffset ? 'no offset' : 'offset'}`)
 						.moveRapid({ z: this.machineParams.safeHeight })
 						.moveRapid({
@@ -117,8 +124,6 @@ export class FishFrontEngrave extends BaseFrontEngrave {
 								: pSizeHalf * row),
 						});
 				}
-
-				patternBlock.addBlock(part);
 			}
 		}
 

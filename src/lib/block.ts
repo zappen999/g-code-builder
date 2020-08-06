@@ -5,6 +5,7 @@ import {
 	Command,
 	PlaneCommand,
 	AbsolutePositioningCommand,
+	RelativePositioningCommand,
 	UnitCommand,
 	CoordinateSystemCommand,
 	ChangeToolCommand,
@@ -16,7 +17,11 @@ import {
 	MoveRapidCommand,
 	LinearFeedRateCommand,
 	RapidFeedRateCommand,
+	StopCommand,
 	EndCommand,
+	ProbeCommand,
+	RawCommand,
+	ProbeArg,
 } from './command';
 
 export class Block {
@@ -27,69 +32,51 @@ export class Block {
 	}
 
 	setPlane(plane: Plane): Block {
-		const cmd = new PlaneCommand(plane);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new PlaneCommand(plane));
 	}
 
 	setAbsolutePositioning(): Block {
-		const cmd = new AbsolutePositioningCommand();
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new AbsolutePositioningCommand());
+	}
+
+	setRelativePositioning(): Block {
+		return this.addCommand(new RelativePositioningCommand());
 	}
 
 	setUnits(unit: Unit): Block {
-		const cmd = new UnitCommand(unit);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new UnitCommand(unit));
 	}
 
 	setCoordinateSystem(coordinateSystem: CoordinateSystem): Block {
-		const cmd = new CoordinateSystemCommand(coordinateSystem);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new CoordinateSystemCommand(coordinateSystem));
 	}
 
 	changeTool(toolName: string, toolNumber?: number): Block {
-		const cmd = new ChangeToolCommand({ toolName, toolNumber });
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new ChangeToolCommand({ toolName, toolNumber }));
 	}
 
 	comment(text: string): Block {
-		const cmd = new CommentCommand(text);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new CommentCommand(text));
 	}
 
 	startSpindle(dir: Dir, rpm: number): Block {
-		const cmd = new StartSpindleCommand({ dir, rpm });
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new StartSpindleCommand({ dir, rpm }));
 	}
 
 	setLinearFeedrate(feedrate: number): Block {
-		const cmd = new LinearFeedRateCommand(feedrate);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new LinearFeedRateCommand(feedrate));
 	}
 
 	setRapidFeedrate(feedrate: number): Block {
-		const cmd = new RapidFeedRateCommand(feedrate);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new RapidFeedRateCommand(feedrate));
 	}
 
 	moveRapid(to: XYZ, feedrate?: number): Block {
-		const cmd = new MoveRapidCommand({ ...to, feedrate });
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new MoveRapidCommand({ ...to, feedrate }));
 	}
 
 	move(to: XYZ, feedrate?: number): Block {
-		const cmd = new MoveCommand({ ...to, feedrate });
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new MoveCommand({ ...to, feedrate }));
 	}
 
 	arc(arg: {
@@ -98,9 +85,7 @@ export class Block {
 		around: Point, // offset to center relative to start (current) position.
 		feedrate?: number
 	}): Block {
-		const cmd = new ArcCommand(arg);
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new ArcCommand(arg));
 	}
 
 	// TODO: Implement this when getting tired of using 'arc' function.
@@ -122,15 +107,24 @@ export class Block {
 	}
 
 	stopSpindle(): Block {
-		const cmd = new StopSpindleCommand();
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new StopSpindleCommand());
 	}
 
+	stop (): Block {
+		return this.addCommand(new StopCommand());
+	}
+
+	probe (arg: ProbeArg): Block {
+		return this.addCommand(new ProbeCommand(arg));
+	}
+
+	raw (arg: string): Block {
+		return this.addCommand(new RawCommand(arg));
+	}
+
+
 	end (): Block {
-		const cmd = new EndCommand();
-		this.commands.push(cmd);
-		return this;
+		return this.addCommand(new EndCommand());
 	}
 
 	///////////////
@@ -160,14 +154,14 @@ export class Block {
 		return clone;
 	}
 
-	addBlock (block: Block): void {
-		for (const cmd of block.commands) {
-			this.commands.push(cmd);
-		}
+	addCommand (command: Command<unknown>): Block {
+		this.commands.push(command);
+		return this;
 	}
 
-	addCommand (command: Command<unknown>): void {
-		this.commands.push(command);
+	getEstimatedRuntimeSec (): number {
+		// TODO: Real
+		return 10;
 	}
 
 	toString(precision = 4): string {

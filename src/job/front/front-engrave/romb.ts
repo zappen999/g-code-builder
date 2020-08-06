@@ -1,31 +1,37 @@
-import { BaseFrontEngrave, DEFAULT_MACHINE_PARAMS } from './base';
-import { Block, Point } from '../../lib';
+import { BaseFrontEngrave, FrontEngraveParams } from './base';
+import { Program, Block, Point } from 'lib/index';
+import type { MachineParams } from 'job/index';
 
-import type { MachineParams, FrontParams } from '../types';
-
-export interface RombFrontParams extends FrontParams {
+export interface RombFrontEngraveParams extends FrontEngraveParams {
 	patternWidth: number;
 	patternHeightMultiplier: number;
 }
 
 export class RombFrontEngrave extends BaseFrontEngrave {
 	constructor (
-		protected frontParams: RombFrontParams,
-		protected machineParams: MachineParams = DEFAULT_MACHINE_PARAMS,
+		protected machineParams: MachineParams,
+		protected frontParams: RombFrontEngraveParams,
 	) {
-		super(frontParams, machineParams);
+		super(machineParams, frontParams);
+	}
+
+	build (): Program {
+		const program = super.build();
+
+		program.addBlock(this.getPatternBlock());
+
+		return program;
 	}
 
 	getPatternBlock (): Block {
-		const leftLeaning = this.makeZigZag('left');
-		const rightLeaning = this.makeZigZag('right');
-
-		leftLeaning.addBlock(rightLeaning);
-		return leftLeaning;
+		const block = new Block();
+		this.makeZigZag(block, 'left');
+		this.makeZigZag(block, 'right');
+		return block;
 	}
 
-	makeZigZag (leaning: 'left' | 'right'): Block {
-		const block = new Block();
+	makeZigZag (block: Block, leaning: 'left' | 'right'): void {
+		const { engrave } = this.frontParams;
 		const isLeft = leaning === 'left';
 
 		let isUpper = true;
@@ -56,31 +62,25 @@ export class RombFrontEngrave extends BaseFrontEngrave {
 		while (upperPoints.length && lowerPoints.length) {
 			if (isUpper) {
 				const upperTravel = getNextUpperPoint();
-				console.log({ upperTravel });
 
-				if (upperTravel) this.travel(block, upperTravel);
+				if (upperTravel) this.travelToEngrave(block, upperTravel);
 
 				const lowerCut = getNextLowerPoint();
-				console.log({ lowerCut });
 
-				if (lowerCut) block.move(lowerCut, this.machineParams.feedrate);
+				if (lowerCut) block.move(lowerCut, engrave.ctrl.feedrate);
 			} else {
 				const lowerTravel = getNextLowerPoint();
-				console.log({ lowerTravel });
 
-				if (lowerTravel) this.travel(block, lowerTravel);
+				if (lowerTravel) this.travelToEngrave(block, lowerTravel);
 
 				const upperCut = getNextUpperPoint();
-				console.log({ upperCut });
 
-				if (upperCut) block.move(upperCut, this.machineParams.feedrate);
+				if (upperCut) block.move(upperCut, engrave.ctrl.feedrate);
 
 			}
 
 			isUpper = !isUpper;
 		}
-
-		return block;
 	}
 
 	mirrorPointHorzontally (p: Point): Point {

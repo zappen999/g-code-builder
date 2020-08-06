@@ -23,3 +23,18 @@ export enum Dir {
 	CW = 'CW',
 	CCW = 'CCW',
 }
+
+export enum Axis {
+	X = 'X',
+	Y = 'Y',
+	Z = 'Z',
+}
+
+export enum AxisDir {
+	X_POS = 'X',
+	X_NEG = 'X-',
+	Y_POS = 'Y',
+	Y_NEG = 'Y-',
+	Z_POS = 'Z',
+	Z_NEG = 'Z-',
+}

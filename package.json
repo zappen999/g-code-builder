@@ -4,8 +4,9 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "./node_modules/.bin/ts-node src/index.ts",
-    "test": "npx mocha --require ts-node/register --recursive --extension ts './src/**/*.test.ts' --watch",
+    "start": "NODE_PATH=src ./node_modules/.bin/ts-node src/index.ts",
+    "generate": "NODE_PATH=src ./node_modules/.bin/ts-node src/job-generator.ts",
+    "test": "NODE_PATH=src npx mocha --require ts-node/register --recursive --extension ts './src/**/*.test.ts' --watch",
     "lint": "npx eslint src/ --ext .ts"
   },
   "repository": {
@@ -24,6 +25,7 @@
     "chai": "^4.2.0",
     "eslint": "^7.5.0",
     "mocha": "^8.0.1",
+    "ts-mocha": "^7.0.0",
     "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   }

@@ -1,6 +1,6 @@
 import type { XYZ } from './types';
 import type { Point } from './point';
-import { Plane, Unit, Dir, CoordinateSystem } from './enums';
+import { Plane, Unit, Dir, CoordinateSystem, AxisDir } from './enums';
 import { isSet } from './helpers';
 
 export interface Command<ArgT> {
@@ -70,6 +70,20 @@ export class AbsolutePositioningCommand
 		return 'G90';
 	}
 }
+
+export class RelativePositioningCommand
+	extends BaseCommand<void>
+	implements Command<void>
+{
+	constructor() {
+		super();
+	}
+
+	toString(): string {
+		return 'G91';
+	}
+}
+
 
 export type UnitArg = Unit;
 export class UnitCommand
@@ -250,6 +264,59 @@ export class StopSpindleCommand
 {
 	toString(): string {
 		return 'M5';
+	}
+}
+
+export type ProbeArg = {
+	mode: 'towards' | 'away';
+	action: 'stop' | 'stop_or_error';
+	feedrate: number;
+	maxTravel: number;
+	axis: AxisDir;
+};
+export class ProbeCommand
+	extends BaseCommand<ProbeArg>
+	implements Command<ProbeArg>
+{
+	toString(): string {
+		const { mode, action, axis, feedrate, maxTravel } = this.arg;
+		let result = 'G38.';
+
+		if (mode === 'towards') {
+			if (action === 'stop_or_error') {
+				result += '2';
+			} else if (action === 'stop') {
+				result += '3';
+			}
+		} else if (mode === 'away') {
+			if (action === 'stop_or_error') {
+				result += '4';
+			} else if (action === 'stop') {
+				result += '5';
+			}
+		}
+
+		return result + ` ${axis}${maxTravel} F${feedrate}`;
+	}
+}
+
+export type RawArg = string;
+export class RawCommand
+	extends BaseCommand<RawArg>
+	implements Command<RawArg>
+{
+	toString(): string {
+		return this.arg;
+	}
+}
+
+export type StopArg = void;
+export class StopCommand
+	extends BaseCommand<StopArg>
+	implements Command<StopArg>
+{
+	toString(): string {
+		return 'M0';
 	}
 }
 

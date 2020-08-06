@@ -1,4 +1,3 @@
-import { expect } from 'chai';
 import { Program } from './program';
 import { Block } from './block';
 import { Plane, Unit, CoordinateSystem, Dir } from './enums';
@@ -18,7 +17,5 @@ describe('Program', () => {
 			.startSpindle(Dir.CW, 10000);
 
 		program.addBlock(setup);
-		console.log(program.toString());
-
 	});
 });

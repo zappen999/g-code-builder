@@ -6,3 +6,4 @@ export * from './line';
 export * from './point';
 export * from './enums';
 export * from './types';
+export * from './helpers';

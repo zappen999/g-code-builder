@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"baseUrl": "./src",
+		"outDir": "./dist/",
 		"lib": [
 			"es2015",
 			"es2016",
@@ -12,6 +13,7 @@
 		"noImplicitThis": true,
 		"preserveConstEnums": true,
 		"importsNotUsedAsValues": "error",
+		"allowSyntheticDefaultImports": true,
 		"strict": true
 	}
 }
