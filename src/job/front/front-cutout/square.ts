@@ -1,5 +1,5 @@
 import { Block, Program } from 'lib/index';
-import type { MachineParams } from 'job/index';
+import { MachineParams, getStepdownDepths } from 'job/index';
 import { BaseFrontCutout, FrontCutoutParams } from './base';
 import * as assert from 'assert';
 
@@ -20,7 +20,7 @@ export class SquareFrontCutout extends BaseFrontCutout {
 		assert.ok(cutout, 'Cutout params must exist for cutout');
 
 		const toolRadius = this.getToolRadius(cutout.ctrl.tool);
-		const depths = this.getStepdownDepths(
+		const depths = getStepdownDepths(
 			cutout.ctrl,
 			thickness
 		);

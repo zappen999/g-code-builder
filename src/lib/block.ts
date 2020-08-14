@@ -146,7 +146,7 @@ export class Block {
 
 	clone(): Block {
 		const clone = new Block();
-		
+
 		for (const cmd of this.commands) {
 			clone.addCommand(cmd.clone());
 		}

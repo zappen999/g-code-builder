@@ -28,4 +28,5 @@ export interface ToolController {
 	feedrate: number;
 	spindleSpeed: number;
 	stepdown: number;
+	stepover?: number;
 }

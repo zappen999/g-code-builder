@@ -1,4 +1,4 @@
-import type { ToolController, MachineParams } from './types';
+import type { MachineParams } from './types';
 import {
 	Program,
 	Block,
@@ -41,21 +41,5 @@ export abstract class BaseJob {
 			.moveRapid({ x: 0, y: 0 })
 			.end()
 			.comment('End teardown');
-	}
-
-	getStepdownDepths (
-		toolCtrl: ToolController,
-		thickness: number
-	): number[] {
-		const passes = Math.ceil(thickness / toolCtrl.stepdown);
-		const perPass = thickness / passes;
-
-		const depths: number[] = [];
-
-		for (let depth = -perPass; depth >= -thickness; depth -= perPass) {
-			depths.push(depth);
-		}
-
-		return depths;
 	}
 }
