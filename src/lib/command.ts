@@ -5,7 +5,7 @@ import { isSet } from './helpers';
 
 export interface Command<ArgT> {
 	scale(factor: XYZ): void;
-	moveRelative(to: XYZ): void;
+	translate(to: XYZ): void;
 	setArg(arg: ArgT): void;
 	clone(): Command<ArgT>;
 	toString(precision: number): string;
@@ -36,7 +36,7 @@ export abstract class BaseCommand<ArgT> {
 	scale(factor: XYZ): void { }
 
 	// eslint-disable-next-line
-	moveRelative(to: XYZ): void { }
+	translate(to: XYZ): void { }
 
 	abstract toString(precision: number): string;
 }
@@ -120,7 +120,7 @@ export class ChangeToolCommand
 		const { toolName, toolNumber } = this.arg;
 		let result = `(Tool change: ${toolName})\nM6`;
 
-		if (toolNumber) {
+		if (isSet(toolNumber)) {
 			result += ` T${toolNumber}`;
 		}
 
@@ -175,15 +175,15 @@ export class MoveCommand
 	implements Command<MoveArg>
 {
 	scale(factor: XYZ): void {
-		if (factor.x && this.arg.x) this.arg.x *= factor.x;
-		if (factor.y && this.arg.y) this.arg.y *= factor.y;
-		if (factor.z && this.arg.z) this.arg.z *= factor.z;
+		if (isSet(factor.x) && isSet(this.arg.x)) this.arg.x *= factor.x;
+		if (isSet(factor.y) && isSet(this.arg.y)) this.arg.y *= factor.y;
+		if (isSet(factor.z) && isSet(this.arg.z)) this.arg.z *= factor.z;
 	}
 
-	moveRelative(to: XYZ): void {
-		if (to.x && this.arg.x) this.arg.x += to.x;
-		if (to.y && this.arg.y) this.arg.y += to.y;
-		if (to.z && this.arg.z) this.arg.z += to.z;
+	translate(to: XYZ): void {
+		if (isSet(to.x) && isSet(this.arg.x)) this.arg.x += to.x;
+		if (isSet(to.y) && isSet(this.arg.y)) this.arg.y += to.y;
+		if (isSet(to.z) && isSet(this.arg.z)) this.arg.z += to.z;
 	}
 
 	protected getGCode(): string {
@@ -201,7 +201,7 @@ export class MoveCommand
 		if (isSet(x)) result += ` X${x.toFixed(precision)}`;
 		if (isSet(y)) result += ` Y${y.toFixed(precision)}`;
 		if (isSet(z)) result += ` Z${z.toFixed(precision)}`;
-		if (feedrate) result += ` F${feedrate.toFixed(precision)}`;
+		if (isSet(feedrate)) result += ` F${feedrate.toFixed(precision)}`;
 
 		return result;
 	}
@@ -226,19 +226,19 @@ export class ArcCommand
 	implements Command<ArcArg>
 {
 	scale(factor: XYZ): void {
-		if (factor.x) {
+		if (isSet(factor.x)) {
 			this.arg.end.x *= factor.x;
 			this.arg.around.x *= factor.x;
 		}
-		if (factor.y) {
+		if (isSet(factor.y)) {
 			this.arg.end.y *= factor.y;
 			this.arg.around.y *= factor.y;
 		}
 	}
 
-	moveRelative(to: XYZ): void {
-		if (to.x) this.arg.end.x += to.x;
-		if (to.y) this.arg.end.y += to.y;
+	translate(to: XYZ): void {
+		if (isSet(to.x)) this.arg.end.x += to.x;
+		if (isSet(to.y)) this.arg.end.y += to.y;
 	}
 
 	toString(precision = 4): string {
@@ -251,7 +251,7 @@ export class ArcCommand
 		result += ` I${around.x.toFixed(precision)}`;
 		result += ` J${around.y.toFixed(precision)}`;
 
-		if (feedrate) result += ` F${feedrate.toFixed(precision)}`;
+		if (isSet(feedrate)) result += ` F${feedrate.toFixed(precision)}`;
 
 		return result;
 	}
@@ -307,6 +307,14 @@ export class RawCommand
 {
 	toString(): string {
 		return this.arg;
+	}
+
+	translate(): void {
+		throw new Error('Cannot translate a raw command');
+	}
+
+	scale(): void {
+		throw new Error('Cannot scale a raw command');
 	}
 }
 

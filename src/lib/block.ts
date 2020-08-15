@@ -122,25 +122,23 @@ export class Block {
 		return this.addCommand(new RawCommand(arg));
 	}
 
-
 	end (): Block {
 		return this.addCommand(new EndCommand());
 	}
 
-	///////////////
-	//  Editing  //
-	///////////////
+	////////////
+	//  Misc  //
+	////////////
 
-	editScale(factor: XYZ): void {
+	scale(factor: XYZ): void {
 		for (const cmd of this.commands) {
 			cmd.scale(factor);
 		}
 	}
 
-	// NOTE: Only usable when using absolute positioning
-	editMoveRelative(to: XYZ): void {
+	translate(to: XYZ): void {
 		for (const cmd of this.commands) {
-			cmd.moveRelative(to);
+			cmd.translate(to);
 		}
 	}
 
@@ -161,6 +159,8 @@ export class Block {
 
 	getEstimatedRuntimeSec (): number {
 		// TODO: Real
+		// Idea: Each command should be able to return a movement distance, use
+		// this along with feedrate to calculate the runtime.
 		return 10;
 	}
 
