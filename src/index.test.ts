@@ -119,7 +119,7 @@ const baseHingeFrontParams: BaseFrontHingeParams = {
 			spindleSpeed: 12000,
 			stepdown: 5,
 		},
-		positions: [
+		hinges: [
 			{ pos: new Point(400, 100), dir: AxisDir.Y_NEG },
 			{ pos: new Point(400, 300), dir: AxisDir.Y_NEG },
 		],
