@@ -25,7 +25,7 @@ import {
 } from './command';
 
 export class Block {
-	protected commands: Command<unknown>[];
+	public readonly commands: Command<unknown>[];
 
 	constructor() {
 		this.commands = [];
@@ -154,6 +154,16 @@ export class Block {
 
 	addCommand (command: Command<unknown>): Block {
 		this.commands.push(command);
+		return this;
+	}
+
+	merge (block: Block): Block {
+		const clone = block.clone();
+
+		for (const command of clone.commands) {
+			this.addCommand(command);
+		}
+
 		return this;
 	}
 
