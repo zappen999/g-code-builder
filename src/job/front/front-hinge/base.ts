@@ -34,27 +34,43 @@ export class BaseHinge extends BaseFront {
 
 		for (const hinge of hinges) {
 			// TODO: Rapid to center position of hinge
-			this.addHingeBlock(hinge);
+			// TODO: We could either: rotate the hinge into position (around
+			// origin), or mirror the hinge, or just create it in the correct
+			// orientation directly.
+			program.addBlock(this.getHingeBlock(hinge));
 		}
-
-		// this.buildBoreBlock(program);
-		this.buildDrillBlock(program);
 
 		return program;
 	}
 
 	// TODO: Take real measurements to get positions of skrew holes.
 	// https://i.pinimg.com/originals/de/29/fa/de29faef6358c9236b2963ad560f4722.jpg
-	addHingeBlock (program: Program, hinge: Hinge): void {
+	getHingeBlock (hinge: Hinge): Block {
+		const { ctrl } = this.frontParams.hinge;
 		const block = new Block();
 
-		// Make hinge bore at center (where we are)
-		// Rapid to first hole position (depending on direction)
-		// drill
-		// Rapid to second hole position (depending on direction)
-		// drill
+		const bore: Bore = { diameter: 35, depth: 8 };
+		const hole: Hole = { depth: 8 };
 
-		program.addBlock(block);
+		const boreFactory = new BoreFactory(bore, ctrl);
+		const drillFactory = new DrillFactory(hole, ctrl);
+
+		// Make hinge bore at center (where we are)
+		block.merge(boreFactory.build());
+
+		// Rapid to first hole position (depending on hinge direction)
+		block.moveRapid({ });
+
+		// drill
+		block.merge(drillFactory.build());
+
+		// Rapid to second hole position (depending on hinge direction)
+		block.moveRapid({ });
+
+		// drill second hole
+		block.merge(drillFactory.build());
+
+		return block;
 	}
 
 	buildDrillBlock (program: Program): void {
