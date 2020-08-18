@@ -1,6 +1,7 @@
 import type { XYZ } from 'lib/index';
 
 export interface MachineParams {
+	feedrate: number;
 	rapidFeedrate: number;
 	safeHeight: number;
 	probe: {

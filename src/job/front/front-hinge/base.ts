@@ -2,12 +2,14 @@ import { BaseFront } from 'job/front/index';
 import { Program, Block } from 'lib/index';
 import type { MachineParams } from 'job/index';
 import type { FrontParams } from 'job/front/index';
-import type { Point, AxisDir } from 'lib/index';
+import { Point, AxisDir } from 'lib/index';
 import type { ToolController } from 'job/index';
 import { BoreFactory, Bore, DrillFactory, Hole } from 'factory/index';
 
 export interface Hinge {
+	// Center point of the bore for the hinge.
 	pos: Point;
+	// Which way the hinge points when it's attached to the front.
 	dir: AxisDir;
 }
 
@@ -20,6 +22,12 @@ export interface BaseFrontHingeParams extends FrontParams {
 
 // TODO: This class is specific to IKEA-type hinges. This class should only
 // contain generic hinge-functionality.
+
+const HINGE_SCREWS_DISTANCE_APART = 50;
+const HINGE_SCREWS_OFFSET = 10;
+const BORE: Bore = { diameter: 35, depth: 8 };
+const HOLE: Hole = { depth: 10 };
+
 export class BaseHinge extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
@@ -49,28 +57,75 @@ export class BaseHinge extends BaseFront {
 		const { ctrl } = this.frontParams.hinge;
 		const block = new Block();
 
-		const bore: Bore = { diameter: 35, depth: 8 };
-		const hole: Hole = { depth: 8 };
+		const boreFactory = new BoreFactory(BORE, ctrl);
+		const drillFactory = new DrillFactory(HOLE, ctrl);
 
-		const boreFactory = new BoreFactory(bore, ctrl);
-		const drillFactory = new DrillFactory(hole, ctrl);
+		block.merge(this.safeTravel({ x: 0, y: 0 }));
 
-		// Make hinge bore at center (where we are)
 		block.merge(boreFactory.build());
 
-		// Rapid to first hole position (depending on hinge direction)
-		block.moveRapid({ });
+		switch (hinge.dir) {
+			case AxisDir.X_NEG:
+				block.merge(this.safeTravel({
+					x: HINGE_SCREWS_OFFSET,
+					y: HINGE_SCREWS_DISTANCE_APART/2,
+				}));
+				break;
+			case AxisDir.X_POS:
+				block.merge(this.safeTravel({
+					x: -HINGE_SCREWS_OFFSET,
+					y: HINGE_SCREWS_DISTANCE_APART/2,
+				}));
+				break;
+			case AxisDir.Y_NEG:
+				block.merge(this.safeTravel({
+					x: -(HINGE_SCREWS_DISTANCE_APART/2),
+					y: HINGE_SCREWS_OFFSET,
+				}));
+				break;
+			case AxisDir.Y_POS:
+				block.merge(this.safeTravel({
+					x: -(HINGE_SCREWS_DISTANCE_APART/2),
+					y: -HINGE_SCREWS_OFFSET,
+				}));
+				break;
+		}
 
-		// drill
 		block.merge(drillFactory.build());
 
-		// Rapid to second hole position (depending on hinge direction)
-		block.moveRapid({ });
+		switch (hinge.dir) {
+			case AxisDir.X_NEG:
+				block.merge(this.safeTravel({
+					x: HINGE_SCREWS_OFFSET,
+					y: -(HINGE_SCREWS_DISTANCE_APART/2),
+				}));
+				break;
+			case AxisDir.X_POS:
+				block.merge(this.safeTravel({
+					x: -HINGE_SCREWS_OFFSET,
+					y: -(HINGE_SCREWS_DISTANCE_APART/2),
+				}));
+				break;
+			case AxisDir.Y_NEG:
+				block.merge(this.safeTravel({
+					x: HINGE_SCREWS_DISTANCE_APART/2,
+					y: HINGE_SCREWS_OFFSET,
+				}));
+				break;
+			case AxisDir.Y_POS:
+				block.merge(this.safeTravel({
+					x: HINGE_SCREWS_DISTANCE_APART/2,
+					y: -HINGE_SCREWS_OFFSET,
+				}));
+				break;
+		}
 
-		// drill second hole
 		block.merge(drillFactory.build());
+
+		block.translate({ ...hinge.pos });
 
 		return block;
+		// return block.merge(this.safeTravel({ x: 0, y: 0 }));
 	}
 
 	buildDrillBlock (program: Program): void {

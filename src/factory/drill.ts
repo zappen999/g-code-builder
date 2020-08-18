@@ -22,6 +22,7 @@ export class DrillFactory {
 
 			block
 				.move({ z: depth }, this.ctrl.feedrate)
+				// TODO: What rapid speed?
 				.moveRapid({ z: 0 });
 
 			if (!isFinalDepth) {

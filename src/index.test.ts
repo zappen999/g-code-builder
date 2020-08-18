@@ -16,6 +16,7 @@ import type { FrontEngraveParams } from 'job/front/front-engrave/base';
 import * as fs from 'fs';
 
 const DEFAULT_MACHINE_PARAMS: MachineParams = {
+	feedrate: 600,
 	rapidFeedrate: 10000,
 	safeHeight: 5,
 	probe: {
@@ -113,15 +114,16 @@ const baseHingeFrontParams: BaseFrontHingeParams = {
 			tool: {
 				id: 1,
 				name: '6 mm end mill',
-				diameter: 6,
+				diameter: 4,
 			},
 			feedrate: 600,
 			spindleSpeed: 12000,
-			stepdown: 5,
+			stepdown: 4,
+			stepover: 3.8,
 		},
 		hinges: [
-			{ pos: new Point(400, 100), dir: AxisDir.Y_NEG },
-			{ pos: new Point(400, 300), dir: AxisDir.Y_NEG },
+			{ pos: new Point(400, 100), dir: AxisDir.X_NEG },
+			{ pos: new Point(400, 300), dir: AxisDir.X_NEG },
 		],
 	},
 };

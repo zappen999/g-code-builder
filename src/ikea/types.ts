@@ -1,4 +1,4 @@
-import type { HingePosition } from 'job/front/index';
+import type { Hinge } from 'job/front/index';
 
 export interface Front {
 	id: string;
@@ -6,5 +6,5 @@ export interface Front {
 	reversable: boolean; // Hinges still works if front is rotated 180 deg.
 	width: number;
 	height: number;
-	hinges: HingePosition[];
+	hinges: Hinge[];
 }
