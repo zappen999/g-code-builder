@@ -5,6 +5,7 @@ import {
 	Plane,
 	Unit,
 	CoordinateSystem,
+	XYZ,
 } from 'lib/index';
 
 export abstract class BaseJob {
@@ -19,6 +20,22 @@ export abstract class BaseJob {
 		program.addBlock(this.getTeardownBlock());
 
 		return program;
+	}
+
+	safeTravel (
+		to: XYZ & Required<Pick<XYZ, 'x' | 'y'>>,
+		slowdownMargin = 3
+	): Block {
+		const block = new Block();
+
+		const toZ = to.z || 0;
+
+		block.moveRapid({ z: this.machineParams.safeHeight });
+		block.moveRapid({ x: to.x, y: to.y });
+		block.moveRapid({ z: toZ + slowdownMargin });
+		block.move({ z: toZ });
+
+		return block;
 	}
 
 	getSetupBlock (): Block {
