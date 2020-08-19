@@ -27,8 +27,12 @@ export abstract class BaseCommand<ArgT> {
 			this.constructor as { new (): Command<ArgT> }
 		)();
 
-		// TODO: Suboptimal performance
-		clone.setArg(JSON.parse(JSON.stringify(this.getArg())));
+		const arg = JSON.stringify(this.getArg())
+
+		if (arg) {
+			clone.setArg(JSON.parse(arg));
+		}
+
 		return clone;
 	}
 
