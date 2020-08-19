@@ -9,8 +9,8 @@ export const FRONTS: { [id: string]: Front } = {
 		height: 381,
 		reversable: true,
 		hinges: [
-			{ pos: new Point(-497, -100), dir: AxisDir.Y_NEG },
-			{ pos: new Point(-497, -300), dir: AxisDir.Y_NEG },
+			{ pos: new Point(-22.5, -100), dir: AxisDir.X_NEG },
+			{ pos: new Point(-22.5, -300), dir: AxisDir.X_NEG },
 		],
 	},
 };
