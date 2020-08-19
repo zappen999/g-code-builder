@@ -11,7 +11,7 @@ export interface FrontCutoutParams extends FrontParams {
 		ctrl: ToolController;
 		// Zero Z against the working bed (to avoid cutting into wasteboard)
 		bedProbe?: {
-			pos: XYZ;
+			pos: Required<XYZ>;
 			touchPlaceThickness: number;
 		},
 	};
@@ -38,10 +38,13 @@ export abstract class BaseFrontCutout extends BaseFront {
 			.changeTool(tool.name, tool.id);
 
 		if (bedProbe) {
+			const { x, y, z } = bedProbe.pos;
 			this.addDocs(
-				'The program will stop to probe against the workbed surface. ' +
-				'This is done to spare the wasteboard during cutout. Note ' +
-				'that the zero will be lost after this job',
+				'The program will pause to probe against the workbed surface ' +
+				`from X${x} Y${y} Z${z} with a probe-plate thickness of ` +
+				`${bedProbe.touchPlaceThickness}mm. This is done to spare ` +
+				'the wasteboard during cutout. Note that the zero will be ' +
+				'lost after this job',
 			);
 			block.merge(this.probeAgainstWorkbedSurface());
 		}

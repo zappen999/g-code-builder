@@ -34,6 +34,14 @@ export class BaseHinge extends BaseFront {
 		protected frontParams: BaseFrontHingeParams,
 	) {
 		super(machineParams, frontParams);
+
+		this.addDocs(
+			`This will create a bore of ${BORE.diameter}mm, ` +
+			`${BORE.depth}mm depth for the hinges. The hinge screw holes will ` +
+			`be ${HINGE_SCREWS_DISTANCE_APART}mm apart, ${HOLE.depth}mm deep, ` +
+			`and offset ${HINGE_SCREWS_OFFSET}mm from the bore center in the ` +
+			`opposite direction of the hinge`
+		);
 	}
 
 	build (): Block {

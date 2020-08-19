@@ -130,7 +130,7 @@ function writeToFile (job: BaseJob, name: string): void {
 		job.buildProgram().toString()
 	);
 	fs.writeFileSync(
-		`output/${name}-docs.txt`,
+		`output/${name}-docs.html`,
 		job.buildDocs()
 	);
 }

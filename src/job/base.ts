@@ -28,7 +28,11 @@ export abstract class BaseJob {
 	}
 
 	buildDocs (): string {
-		return this.docs.map(d => `- ${d}`).join('\n');
+		return `
+			<ul>
+				${this.docs.map(d => `<li>${d}</li>`).join('\n')}
+			</ul>
+		`;
 	}
 
 	addDocs(message: string): void {
