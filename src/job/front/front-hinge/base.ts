@@ -1,5 +1,5 @@
 import { BaseFront } from 'job/front/index';
-import { Block, HelpInfo } from 'lib/index';
+import { Block } from 'lib/index';
 import type { MachineParams } from 'job/index';
 import type { FrontParams } from 'job/front/index';
 import { Point, AxisDir } from 'lib/index';
@@ -31,10 +31,9 @@ const HOLE: Hole = { depth: 10 };
 export class BaseHinge extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
-		protected help: HelpInfo,
 		protected frontParams: BaseFrontHingeParams,
 	) {
-		super(machineParams, help, frontParams);
+		super(machineParams, frontParams);
 	}
 
 	build (): Block {

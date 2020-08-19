@@ -1,5 +1,5 @@
 import { BaseFrontEngrave, FrontEngraveParams } from './base';
-import { Block, Dir, Point, HelpInfo } from 'lib/index';
+import { Block, Dir, Point } from 'lib/index';
 
 import type { MachineParams } from 'job/index';
 import { FitDimension } from 'job/index';
@@ -12,10 +12,9 @@ export interface FishFrontEngraveParams extends FrontEngraveParams {
 export class FishFrontEngrave extends BaseFrontEngrave {
 	constructor (
 		protected machineParams: MachineParams,
-		protected help: HelpInfo,
 		protected frontParams: FishFrontEngraveParams,
 	) {
-		super(machineParams, help, frontParams);
+		super(machineParams, frontParams);
 	}
 
 	build (): Block {

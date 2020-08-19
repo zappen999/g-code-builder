@@ -6,25 +6,33 @@ import {
 	Unit,
 	CoordinateSystem,
 	XYZ,
-    HelpInfo,
 } from 'lib/index';
 
 export abstract class BaseJob {
+	protected docs: string[] = [];
+
 	constructor (
 		protected machineParams: MachineParams,
-		protected help: HelpInfo,
-	) {}
+	) { }
 
 	abstract build (): Block;
 
 	buildProgram (): Program {
-		const program = new Program(this.help);
+		const program = new Program();
 
 		program.addBlock(this.getSetupBlock());
 		program.addBlock(this.build());
 		program.addBlock(this.getTeardownBlock());
 
 		return program;
+	}
+
+	buildDocs (): string {
+		return this.docs.map(d => `- ${d}`).join('\n');
+	}
+
+	addDocs(message: string): void {
+		this.docs.push(message);
 	}
 
 	safeTravel (

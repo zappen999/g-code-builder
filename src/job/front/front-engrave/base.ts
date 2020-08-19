@@ -2,7 +2,6 @@ import {
 	Block,
 	Dir,
 	Point,
-    HelpInfo,
 } from 'lib/index';
 import type { MachineParams, ToolController } from 'job/index';
 import type { FrontParams } from 'job/front/index';
@@ -22,10 +21,9 @@ export interface FrontEngraveParams extends FrontParams {
 export abstract class BaseFrontEngrave extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
-		protected help: HelpInfo,
 		protected frontParams: FrontEngraveParams,
 	) {
-		super(machineParams, help, frontParams);
+		super(machineParams, frontParams);
 	}
 
 	build (): Block {

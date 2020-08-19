@@ -3,7 +3,7 @@
  *
  * making etc.
  */
-import { Block, HelpInfo } from 'lib/index';
+import { Block } from 'lib/index';
 import { BaseJob, MachineParams } from 'job/index';
 
 export interface FrontParams {
@@ -15,10 +15,11 @@ export interface FrontParams {
 export abstract class BaseFront extends BaseJob {
 	constructor (
 		protected machineParams: MachineParams,
-		protected help: HelpInfo,
 		protected frontParams: FrontParams,
 	) {
-		super(machineParams, help);
+		super(machineParams);
+
+		this.addDocs('Origin is at the top right corner of the finished front');
 	}
 
 	build (): Block {

@@ -1,4 +1,5 @@
 import {
+	BaseJob,
 	MachineParams,
 	FrontParams,
 	SquareFrontCutout,
@@ -11,7 +12,7 @@ import {
 	BaseHinge,
 	BaseFrontHingeParams,
 } from 'job/index';
-import { Program, Point, AxisDir } from 'lib/index';
+import { Point, AxisDir } from 'lib/index';
 import type { FrontEngraveParams } from 'job/front/front-engrave/base';
 import * as fs from 'fs';
 
@@ -123,10 +124,14 @@ const baseHingeFrontParams: BaseFrontHingeParams = {
 	},
 };
 
-function writeToFile (program: Program, name: string): void {
+function writeToFile (job: BaseJob, name: string): void {
 	fs.writeFileSync(
 		`output/${name}.nc`,
-		program.toString()
+		job.buildProgram().toString()
+	);
+	fs.writeFileSync(
+		`output/${name}-docs.txt`,
+		job.buildDocs()
 	);
 }
 
@@ -135,10 +140,9 @@ describe('Test bench', () => {
 		it('Square cutout', () => {
 			const job = new SquareFrontCutout(
 				DEFAULT_MACHINE_PARAMS,
-				{ origin: 'Origin should be placed here and there' },
 				squareFrontCutoutParams
 			);
-			writeToFile(job.buildProgram(), 'cutout-square')
+			writeToFile(job, 'cutout-square')
 		});
 	});
 
@@ -147,10 +151,9 @@ describe('Test bench', () => {
 			it('should work', () => {
 				const job = new RombFrontEngrave(
 					DEFAULT_MACHINE_PARAMS,
-					{ origin: 'Origin should be placed here and there' },
 					rombFrontEngraveParams,
 				);
-				writeToFile(job.buildProgram(), 'engrave-romb')
+				writeToFile(job, 'engrave-romb')
 			});
 		});
 
@@ -158,10 +161,9 @@ describe('Test bench', () => {
 			it('should work', () => {
 				const job = new FishFrontEngrave(
 					DEFAULT_MACHINE_PARAMS,
-					{ origin: 'Origin should be placed here and there' },
 					fishFrontEngraveParams,
 				);
-				writeToFile(job.buildProgram(), 'engrave-romb')
+				writeToFile(job, 'engrave-romb')
 			});
 		});
 	});
@@ -170,10 +172,9 @@ describe('Test bench', () => {
 		it('should work', () => {
 			const job = new BaseHinge(
 				DEFAULT_MACHINE_PARAMS,
-				{ origin: 'Origin should be placed here and there' },
 				baseHingeFrontParams,
 			);
-			writeToFile(job.buildProgram(), 'hinge-base')
+			writeToFile(job, 'hinge-base')
 		});
 	});
 });

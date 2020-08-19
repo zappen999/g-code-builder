@@ -1,4 +1,4 @@
-import { Block, AxisDir, HelpInfo, XYZ } from 'lib/index';
+import { Block, AxisDir, XYZ } from 'lib/index';
 import {
 	BaseFront,
 	FrontParams,
@@ -20,10 +20,9 @@ export interface FrontCutoutParams extends FrontParams {
 export abstract class BaseFrontCutout extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
-		protected help: HelpInfo,
 		protected frontParams: FrontCutoutParams,
 	) {
-		super(machineParams, help, frontParams);
+		super(machineParams, frontParams);
 	}
 
 	build (): Block {
@@ -39,6 +38,11 @@ export abstract class BaseFrontCutout extends BaseFront {
 			.changeTool(tool.name, tool.id);
 
 		if (bedProbe) {
+			this.addDocs(
+				'The program will stop to probe against the workbed surface. ' +
+				'This is done to spare the wasteboard during cutout. Note ' +
+				'that the zero will be lost after this job',
+			);
 			block.merge(this.probeAgainstWorkbedSurface());
 		}
 
