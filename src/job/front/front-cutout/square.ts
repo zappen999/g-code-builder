@@ -37,10 +37,12 @@ export class SquareFrontCutout extends BaseFrontCutout {
 				.move({ y: -this.frontParams.height - toolRadius })
 				.move({ x: toolRadius })
 				.move({ y: toolRadius })
-				.moveRapid({ z: this.machineParams.safeHeight * 5 })
-				.comment('End cutout');
 			block.merge(pass);
 		}
+
+		block
+			.moveRapid({ z: this.machineParams.safeHeight * 5 })
+			.comment('End cutout');
 
 		return block;
 	}
