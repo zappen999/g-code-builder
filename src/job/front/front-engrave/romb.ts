@@ -1,5 +1,5 @@
 import { BaseFrontEngrave, FrontEngraveParams } from './base';
-import { Program, Block, Point } from 'lib/index';
+import { Block, Point, HelpInfo } from 'lib/index';
 import type { MachineParams } from 'job/index';
 
 export interface RombFrontEngraveParams extends FrontEngraveParams {
@@ -10,17 +10,14 @@ export interface RombFrontEngraveParams extends FrontEngraveParams {
 export class RombFrontEngrave extends BaseFrontEngrave {
 	constructor (
 		protected machineParams: MachineParams,
+		protected help: HelpInfo,
 		protected frontParams: RombFrontEngraveParams,
 	) {
-		super(machineParams, frontParams);
+		super(machineParams, help, frontParams);
 	}
 
-	build (): Program {
-		const program = super.build();
-
-		program.addBlock(this.getPatternBlock());
-
-		return program;
+	build (): Block {
+		return this.getPatternBlock();
 	}
 
 	getPatternBlock (): Block {

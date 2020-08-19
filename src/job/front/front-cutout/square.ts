@@ -1,4 +1,4 @@
-import { Block, Program } from 'lib/index';
+import { Block, HelpInfo } from 'lib/index';
 import { MachineParams, getStepdownDepths } from 'job/index';
 import { BaseFrontCutout, FrontCutoutParams } from './base';
 import * as assert from 'assert';
@@ -8,17 +8,18 @@ export type SquareFrontCutoutParams = FrontCutoutParams;
 export class SquareFrontCutout extends BaseFrontCutout {
 	constructor (
 		protected machineParams: MachineParams,
+		protected help: HelpInfo,
 		protected frontParams: SquareFrontCutoutParams,
 	) {
-		super(machineParams, frontParams);
+		super(machineParams, help, frontParams);
 	}
 
-	build (): Program {
-		const program = super.build();
+	build (): Block {
 		const { cutout, thickness } = this.frontParams;
 
 		assert.ok(cutout, 'Cutout params must exist for cutout');
 
+		const block = new Block();
 		const toolRadius = this.getToolRadius(cutout.ctrl.tool);
 		const depths = getStepdownDepths(
 			cutout.ctrl,
@@ -38,9 +39,9 @@ export class SquareFrontCutout extends BaseFrontCutout {
 				.move({ y: toolRadius })
 				.moveRapid({ z: this.machineParams.safeHeight * 5 })
 				.comment('End cutout');
-			program.addBlock(pass);
+			block.merge(pass);
 		}
 
-		return program;
+		return block;
 	}
 }

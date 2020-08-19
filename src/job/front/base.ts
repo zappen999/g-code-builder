@@ -3,7 +3,7 @@
  *
  * making etc.
  */
-import { Program, Block } from 'lib/index';
+import { Block, HelpInfo } from 'lib/index';
 import { BaseJob, MachineParams } from 'job/index';
 
 export interface FrontParams {
@@ -15,16 +15,14 @@ export interface FrontParams {
 export abstract class BaseFront extends BaseJob {
 	constructor (
 		protected machineParams: MachineParams,
+		protected help: HelpInfo,
 		protected frontParams: FrontParams,
 	) {
-		super(machineParams);
+		super(machineParams, help);
 	}
 
-	build (): Program {
-		return super
-			.build()
-			.addBlock(new Block()
-				.comment(`Front params: ${JSON.stringify(this.frontParams)}`)
-			);
+	build (): Block {
+		return new Block()
+			.comment(`Front params: ${JSON.stringify(this.frontParams)}`);
 	}
 }

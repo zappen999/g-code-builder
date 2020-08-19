@@ -1,56 +1,57 @@
-import { Block, Program, AxisDir } from 'lib/index';
+import { Block, AxisDir, HelpInfo, XYZ } from 'lib/index';
 import {
 	BaseFront,
 	FrontParams,
 } from 'job/front/index';
-import type { MachineParams, Tool, ToolController } from 'job/index';
+import type { MachineParams, ToolController } from 'job/index';
 import * as assert from 'assert';
 
 export interface FrontCutoutParams extends FrontParams {
 	cutout: {
 		ctrl: ToolController;
-		probeBed: boolean;
+		// Zero Z against the working bed (to avoid cutting into wasteboard)
+		bedProbe?: {
+			pos: XYZ;
+			touchPlaceThickness: number;
+		},
 	};
 }
 
 export abstract class BaseFrontCutout extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
+		protected help: HelpInfo,
 		protected frontParams: FrontCutoutParams,
 	) {
-		super(machineParams, frontParams);
+		super(machineParams, help, frontParams);
 	}
 
-	build (): Program {
-		const program = new Program();
+	build (): Block {
 		const { cutout } = this.frontParams;
 
 		assert.ok(cutout, 'Cutout params must exist for cutout');
 
-		const { ctrl, probeBed } = cutout;
+		const { ctrl, bedProbe } = cutout;
 		const { tool } = ctrl;
 
-		program.addBlock(new Block()
+		const block = new Block()
 			.comment('Change to cutout tool')
-			.changeTool(tool.name, tool.id)
-		);
+			.changeTool(tool.name, tool.id);
 
-		if (probeBed) {
-			program.addBlock(this.probeAgainstWorkbedSurface());
+		if (bedProbe) {
+			block.merge(this.probeAgainstWorkbedSurface());
 		}
 
-		program.addBlock(this.rapidToCutoutPosition());
-
-		return program;
+		return block.merge(this.rapidToCutoutPosition());
 	}
 
 	probeAgainstWorkbedSurface (): Block {
-		const { machineParams } = this;
-		const { workBedSurface } = machineParams.probe.positions;
+		const { bedProbe } = this.frontParams.cutout;
+		assert.ok(bedProbe);
 
 		return new Block()
 			.comment('Starting zero against workbed surface')
-			.moveRapid(workBedSurface.pos, this.machineParams.rapidFeedrate)
+			.moveRapid(bedProbe.pos, this.machineParams.rapidFeedrate)
 			.stop()
 			.setRelativePositioning()
 			.probe({
@@ -62,7 +63,7 @@ export abstract class BaseFrontCutout extends BaseFront {
 			})
 			.comment('Setting new tool zero')
 			// TODO: Implement G10 in API
-			.raw(`G10 L20 Z${workBedSurface.touchPlaceThickness}`)
+			.raw(`G10 L20 Z${bedProbe.touchPlaceThickness}`)
 			.comment('Back off from touch plate')
 			.moveRapid({ z: 20 })
 			.setAbsolutePositioning()
@@ -73,9 +74,8 @@ export abstract class BaseFrontCutout extends BaseFront {
 	rapidToCutoutPosition (): Block {
 		const { cutout, thickness } = this.frontParams;
 		const { safeHeight } = this.machineParams;
-		assert.ok(cutout);
 
-		const { ctrl, probeBed } = cutout;
+		const { ctrl, bedProbe } = cutout;
 		const { tool } = ctrl;
 		const toolRadius = this.getToolRadius(tool);
 
@@ -84,13 +84,9 @@ export abstract class BaseFrontCutout extends BaseFront {
 			.moveRapid({
 				x: toolRadius,
 				y: toolRadius,
-				z: probeBed
+				z: bedProbe
 					? thickness + safeHeight
 					: safeHeight,
 			});
-	}
-
-	getToolRadius (tool: Tool): number {
-		return tool.diameter / 2;
 	}
 }

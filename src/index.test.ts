@@ -22,14 +22,6 @@ const DEFAULT_MACHINE_PARAMS: MachineParams = {
 	probe: {
 		feedrate: 60,
 		maxTravel: 30,
-		positions: {
-			// TODO: Should this be determined by the cutout job? This depends
-			// on the front size.
-			workBedSurface: {
-				pos: { x: -50, y: -50, z: 50 },
-				touchPlaceThickness: 20,
-			},
-		},
 	},
 };
 
@@ -102,7 +94,10 @@ const squareFrontCutoutParams: SquareFrontCutoutParams = {
 			spindleSpeed: 12000,
 			stepdown: 10,
 		},
-		probeBed: true,
+		bedProbe: {
+			pos: { x: -50, y: -50, z: 50 },
+			touchPlaceThickness: 20,
+		},
 	},
 }
 
@@ -140,9 +135,10 @@ describe('Test bench', () => {
 		it('Square cutout', () => {
 			const job = new SquareFrontCutout(
 				DEFAULT_MACHINE_PARAMS,
+				{ origin: 'Origin should be placed here and there' },
 				squareFrontCutoutParams
 			);
-			writeToFile(job.build(), 'cutout-square')
+			writeToFile(job.buildProgram(), 'cutout-square')
 		});
 	});
 
@@ -151,9 +147,10 @@ describe('Test bench', () => {
 			it('should work', () => {
 				const job = new RombFrontEngrave(
 					DEFAULT_MACHINE_PARAMS,
+					{ origin: 'Origin should be placed here and there' },
 					rombFrontEngraveParams,
 				);
-				writeToFile(job.build(), 'engrave-romb')
+				writeToFile(job.buildProgram(), 'engrave-romb')
 			});
 		});
 
@@ -161,20 +158,22 @@ describe('Test bench', () => {
 			it('should work', () => {
 				const job = new FishFrontEngrave(
 					DEFAULT_MACHINE_PARAMS,
+					{ origin: 'Origin should be placed here and there' },
 					fishFrontEngraveParams,
 				);
-				writeToFile(job.build(), 'engrave-romb')
+				writeToFile(job.buildProgram(), 'engrave-romb')
 			});
 		});
 	});
 
 	describe('Hinge base', () => {
-		it.only('should work', () => {
+		it('should work', () => {
 			const job = new BaseHinge(
 				DEFAULT_MACHINE_PARAMS,
+				{ origin: 'Origin should be placed here and there' },
 				baseHingeFrontParams,
 			);
-			writeToFile(job.build(), 'hinge-base')
+			writeToFile(job.buildProgram(), 'hinge-base')
 		});
 	});
 });

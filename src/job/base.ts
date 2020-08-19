@@ -1,4 +1,4 @@
-import type { MachineParams } from './types';
+import type { MachineParams, Tool } from './types';
 import {
 	Program,
 	Block,
@@ -6,19 +6,23 @@ import {
 	Unit,
 	CoordinateSystem,
 	XYZ,
+    HelpInfo,
 } from 'lib/index';
 
 export abstract class BaseJob {
 	constructor (
-		protected machineParams: MachineParams
-	) { }
+		protected machineParams: MachineParams,
+		protected help: HelpInfo,
+	) {}
 
-	build (): Program {
-		const program = new Program();
+	abstract build (): Block;
+
+	buildProgram (): Program {
+		const program = new Program(this.help);
 
 		program.addBlock(this.getSetupBlock());
-		// TODO: This should be added at the very end, like a destructor
-		// program.addBlock(this.getTeardownBlock());
+		program.addBlock(this.build());
+		program.addBlock(this.getTeardownBlock());
 
 		return program;
 	}
@@ -63,5 +67,9 @@ export abstract class BaseJob {
 			.moveRapid({ x: 0, y: 0 }, rapidFeedrate)
 			.end()
 			.comment('End teardown');
+	}
+
+	getToolRadius (tool: Tool): number {
+		return tool.diameter / 2;
 	}
 }

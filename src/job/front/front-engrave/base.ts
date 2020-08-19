@@ -1,8 +1,8 @@
 import {
 	Block,
-	Program,
 	Dir,
 	Point,
+    HelpInfo,
 } from 'lib/index';
 import type { MachineParams, ToolController } from 'job/index';
 import type { FrontParams } from 'job/front/index';
@@ -22,23 +22,23 @@ export interface FrontEngraveParams extends FrontParams {
 export abstract class BaseFrontEngrave extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
+		protected help: HelpInfo,
 		protected frontParams: FrontEngraveParams,
 	) {
-		super(machineParams, frontParams);
+		super(machineParams, help, frontParams);
 	}
 
-	build (): Program {
-		const program = super.build();
+	build (): Block {
+		const block = new Block();
 
-		program.addBlock(new Block()
-			.startSpindle(Dir.CW, this.frontParams.engrave.ctrl.spindleSpeed)
-		);
+		block
+			.startSpindle(Dir.CW, this.frontParams.engrave.ctrl.spindleSpeed);
 
 		if (this.frontParams.chamfer) {
-			program.addBlock(this.getChamferBlock());
+			block.merge(this.getChamferBlock());
 		}
 
-		return program;
+		return block;
 	}
 
 	travelToEngrave (

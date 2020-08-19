@@ -1,5 +1,5 @@
 import { BaseFront } from 'job/front/index';
-import { Program, Block } from 'lib/index';
+import { Block, HelpInfo } from 'lib/index';
 import type { MachineParams } from 'job/index';
 import type { FrontParams } from 'job/front/index';
 import { Point, AxisDir } from 'lib/index';
@@ -31,24 +31,21 @@ const HOLE: Hole = { depth: 10 };
 export class BaseHinge extends BaseFront {
 	constructor (
 		protected machineParams: MachineParams,
+		protected help: HelpInfo,
 		protected frontParams: BaseFrontHingeParams,
 	) {
-		super(machineParams, frontParams);
+		super(machineParams, help, frontParams);
 	}
 
-	build (): Program {
-		const program = super.build();
+	build (): Block {
 		const { hinges } = this.frontParams.hinge;
+		const block = new Block();
 
 		for (const hinge of hinges) {
-			// TODO: Rapid to center position of hinge
-			// TODO: We could either: rotate the hinge into position (around
-			// origin), or mirror the hinge, or just create it in the correct
-			// orientation directly.
-			program.addBlock(this.getHingeBlock(hinge));
+			block.merge(this.getHingeBlock(hinge));
 		}
 
-		return program;
+		return block;
 	}
 
 	// TODO: Take real measurements to get positions of skrew holes.
@@ -121,28 +118,8 @@ export class BaseHinge extends BaseFront {
 		}
 
 		block.merge(drillFactory.build());
-
 		block.translate({ ...hinge.pos });
 
 		return block;
-		// return block.merge(this.safeTravel({ x: 0, y: 0 }));
-	}
-
-	buildDrillBlock (program: Program): void {
-		const hole: Hole = { depth: 30 };
-		const ctrl: ToolController = {
-			tool: {
-				id: 1,
-				name: 'End mill 6 mm',
-				diameter: 6,
-			},
-			feedrate: 600,
-			spindleSpeed: 24000,
-			stepdown: 10,
-		};
-
-		const drillFactory = new DrillFactory(hole, ctrl);
-
-		program.addBlock(drillFactory.build());
 	}
 }
