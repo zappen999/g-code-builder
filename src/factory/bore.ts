@@ -54,7 +54,7 @@ export class BoreFactory {
 				const prevTheta = theta - this.thetaStep;
 				const nearestPointOnCircle = new Point(
 					this.maxTravel * Math.cos(prevTheta),
-					this.maxTravel * Math.sin(prevTheta),
+					-this.maxTravel * Math.sin(prevTheta),
 				);
 
 				block
