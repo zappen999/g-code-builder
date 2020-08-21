@@ -2,12 +2,18 @@
 	"compilerOptions": {
 		"baseUrl": "./src",
 		"outDir": "./dist/",
+		"declaration": true,
 		"lib": [
 			"es2015",
 			"es2016",
 			"es6",
 			"dom"
 		],
+		"paths": {
+			"lib/*": ["lib/*"],
+			"factory/*": ["factory/*"],
+			"job/*": ["job/*"]
+		},
 		"target": "es2015",
 		"noImplicitReturns": true,
 		"noImplicitThis": true,
