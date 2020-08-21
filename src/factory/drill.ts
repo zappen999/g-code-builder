@@ -1,5 +1,5 @@
-import { ToolController, getStepdownDepths } from 'job/index';
-import { Block } from 'lib/index';
+import type { ToolController } from 'job/index';
+import { Block, getStepdownDepths } from 'lib/index';
 
 export interface Hole {
 	depth: number;

@@ -1,5 +1,5 @@
-import { ToolController, getStepdownDepths } from 'job/index';
-import { Block, Point, Dir } from 'lib/index';
+import type { ToolController } from 'job/index';
+import { Block, Point, Dir, getStepdownDepths  } from 'lib/index';
 
 export interface Bore {
 	diameter: number;
