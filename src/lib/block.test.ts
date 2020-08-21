@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Block } from './';
+import { Block } from './block';
 import { Plane, Unit, CoordinateSystem, Dir } from './enums';
 
 describe('Block', () => {
