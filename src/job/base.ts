@@ -35,6 +35,10 @@ export abstract class BaseJob {
 		`;
 	}
 
+	getDocs(): string[] {
+		return this.docs;
+	}
+
 	addDocs(message: string): void {
 		this.docs.push(message);
 	}
