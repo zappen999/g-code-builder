@@ -24,4 +24,3 @@ export class Program {
 		}, 0);
 	}
 }
-
