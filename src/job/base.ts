@@ -27,7 +27,7 @@ export abstract class BaseJob {
 		return program;
 	}
 
-	buildDocs (): string {
+	buildHTMLDocs (): string {
 		return `
 			<ul>
 				${this.docs.map(d => `<li>${d}</li>`).join('\n')}
