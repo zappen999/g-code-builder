@@ -26,6 +26,7 @@ import {
 
 export class Block {
 	public readonly commands: Command<unknown>[];
+	protected currentToolId: number|undefined;
 
 	constructor() {
 		this.commands = [];
@@ -52,6 +53,10 @@ export class Block {
 	}
 
 	changeTool(toolName: string, toolNumber?: number): Block {
+		if (this.currentToolId && this.currentToolId === toolNumber) {
+			return this;
+		}
+
 		return this.addCommand(new ChangeToolCommand({ toolName, toolNumber }));
 	}
 
