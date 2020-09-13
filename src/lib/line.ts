@@ -1,14 +1,19 @@
-import { Point } from './point';
+import { Point, IPoint } from './point';
 
-export class Line {
+export interface ILine {
+	start: IPoint;
+	end: IPoint;
+}
+
+export class Line implements ILine {
 	constructor (
-		public start: Point,
-		public end: Point
+		public start: IPoint,
+		public end: IPoint
 	) { }
 
 	static getLineIntersection (
-		line1: Line,
-		line2: Line
+		line1: ILine,
+		line2: ILine
 	): Point|undefined {
 		// Line1
 		const al1 = line1.end.y - line1.start.y;
