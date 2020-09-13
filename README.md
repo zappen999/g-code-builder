@@ -43,3 +43,6 @@ CNC only.
 - Add operator hints and help in jobs.
     - Description of the job.
         - Where is the origin? Orientation etc.
+- Support for adding blocks at specific positions:
+    - After another block, using IDs of some sort.
+    - First, last.
