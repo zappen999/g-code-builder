@@ -17,11 +17,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/zappen999/g-code-builder.git"
+    "url": "git+ssh://git@github.com/zappen999/g-code-builder.git"
   },
-  "author": "",
+  "author": "Johan <johan@kanefur.se>",
   "license": "GPL-3.0",
-  "homepage": "https://bitbucket.org/zappen999/g-code-builder#readme",
+  "homepage": "https://github.com/zappen999/g-code-builder",
   "devDependencies": {
     "@types/chai": "^4.2.12",
     "@types/mocha": "^8.0.0",
