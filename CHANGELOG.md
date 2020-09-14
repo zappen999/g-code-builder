@@ -8,5 +8,11 @@ Sections: Added, Changed, Deprecated, Removed, Fixed, Security.
 
 ## Unreleased
 
+
+## 0.2.0 - 2020-09-14
+
+### Added
+- Changelog.
+
 ### Fixed
 - Publish scripts.
