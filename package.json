@@ -9,7 +9,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "build": "tsc && tsc-alias",
     "test": "mocha --require tsconfig-paths/register --require ts-node/register --recursive --extension ts './src/**/*.test.ts' --watch",
     "lint": "eslint src/ --ext .ts"
