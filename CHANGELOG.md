@@ -9,6 +9,12 @@ Sections: Added, Changed, Deprecated, Removed, Fixed, Security.
 ## Unreleased
 
 
+## 0.2.1 - 2020-09-27
+
+### Fixed
+- Build to `commonjs`.
+
+
 ## 0.2.0 - 2020-09-14
 
 ### Added
