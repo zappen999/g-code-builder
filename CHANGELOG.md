@@ -8,6 +8,13 @@ Sections: Added, Changed, Deprecated, Removed, Fixed, Security.
 
 ## Unreleased
 
+
+## 0.4.0 - 2020-09-30
+
+### Added
+- Dwell command `G4`.
+
+
 ## 0.3.0 - 2020-09-30
 
 ### Added
