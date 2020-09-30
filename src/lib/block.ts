@@ -76,12 +76,28 @@ export class Block {
 		return this.addCommand(new RapidFeedRateCommand(feedrate));
 	}
 
-	moveRapid(to: XYZ, feedrate?: number): Block {
-		return this.addCommand(new MoveRapidCommand({ ...to, feedrate }));
+	moveRapid(
+		to: XYZ,
+		feedrate?: number,
+		overrideCoordinateSystem?: CoordinateSystem,
+	): Block {
+		return this.addCommand(new MoveRapidCommand({
+			...to,
+			feedrate,
+			overrideCoordinateSystem,
+		}));
 	}
 
-	move(to: XYZ, feedrate?: number): Block {
-		return this.addCommand(new MoveCommand({ ...to, feedrate }));
+	move(
+		to: XYZ,
+		feedrate?: number,
+		overrideCoordinateSystem?: CoordinateSystem,
+	): Block {
+		return this.addCommand(new MoveCommand({
+			...to,
+			feedrate,
+			overrideCoordinateSystem,
+		}));
 	}
 
 	arc(arg: {
