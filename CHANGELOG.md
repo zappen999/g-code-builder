@@ -8,6 +8,11 @@ Sections: Added, Changed, Deprecated, Removed, Fixed, Security.
 
 ## Unreleased
 
+## 0.3.0 - 2020-09-30
+
+### Added
+- Coordinate system override for move commands.
+
 
 ## 0.2.1 - 2020-09-27
 
