@@ -22,6 +22,7 @@ import {
 	ProbeCommand,
 	RawCommand,
 	ProbeArg,
+	DwellCommand,
 } from './command';
 
 export class Block {
@@ -137,6 +138,10 @@ export class Block {
 
 	probe (arg: ProbeArg): Block {
 		return this.addCommand(new ProbeCommand(arg));
+	}
+
+	dwell (dwellSec: number): Block {
+		return this.addCommand(new DwellCommand(dwellSec));
 	}
 
 	raw (arg: string): Block {
