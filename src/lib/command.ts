@@ -173,7 +173,10 @@ export class LinearFeedRateCommand
 	}
 }
 
-export type MoveArg = XYZ & { feedrate?: number };
+export type MoveArg = XYZ & {
+	feedrate?: number;
+	overrideCoordinateSystem?: CoordinateSystem
+};
 export class MoveCommand
 	extends BaseCommand<MoveArg>
 	implements Command<MoveArg>
@@ -190,8 +193,18 @@ export class MoveCommand
 		if (isSet(to.z) && isSet(this.arg.z)) this.arg.z += to.z;
 	}
 
+	protected get prefix(): string {
+		const { overrideCoordinateSystem } = this.arg;
+
+		if (overrideCoordinateSystem) {
+			return `${overrideCoordinateSystem} `;
+		} else {
+			return '';
+		}
+	}
+
 	protected getGCode(): string {
-		return 'G1';
+		return `${this.prefix}G1`;
 	}
 
 	toString(precision = 4): string {
@@ -215,7 +228,9 @@ export class MoveRapidCommand
 	extends MoveCommand
 	implements Command<MoveArg>
 {
-	protected getGCode(): string { return 'G0'; }
+	protected getGCode(): string {
+		return `${this.prefix}G1`;
+	}
 }
 
 export type ArcArg = {
