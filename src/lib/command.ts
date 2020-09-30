@@ -356,3 +356,13 @@ export class EndCommand
 		return 'M2';
 	}
 }
+
+export type DwellArg = number;
+export class DwellCommand
+	extends BaseCommand<DwellArg>
+	implements Command<DwellArg>
+{
+	toString(precision = 4): string {
+		return `G4 P${this.arg.toFixed(precision)}`;
+	}
+}
