@@ -229,7 +229,7 @@ export class MoveRapidCommand
 	implements Command<MoveArg>
 {
 	protected getGCode(): string {
-		return `${this.prefix}G1`;
+		return `${this.prefix}G0`;
 	}
 }
 
