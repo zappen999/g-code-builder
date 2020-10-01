@@ -9,6 +9,12 @@ Sections: Added, Changed, Deprecated, Removed, Fixed, Security.
 ## Unreleased
 
 
+## 0.4.1 - 2020-10-01
+
+### Fixed
+- Bug with `G0` command.
+
+
 ## 0.4.0 - 2020-09-30
 
 ### Added
