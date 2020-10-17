@@ -10,32 +10,34 @@ export class Line implements ILine {
 		public start: IPoint,
 		public end: IPoint
 	) { }
-
 	static getLineIntersection (
 		line1: ILine,
 		line2: ILine
-	): Point|undefined {
-		// Line1
-		const al1 = line1.end.y - line1.start.y;
-		const bl1 = line1.start.x - line1.end.x;
-		const cl1 = (al1 * line1.start.x) + (bl1 * line1.start.y);
+	): Point|null {
+		const { start: p0, end: p1 } = line1;
+		const { start: p2, end: p3 } = line2;
 
-		// Line2
-		const al2 = line2.end.y - line2.start.y;
-		const bl2 = line2.start.x - line2.end.x;
-		const cl2 = al2 * line2.start.x + bl2 * line2.start.y;
+		const s1_x = p1.x - p0.x;
+		const s1_y = p1.y - p0.y;
+		const s2_x = p3.x - p2.x;
+		const s2_y = p3.y - p2.y;
 
-		const determinant = al1 * bl2 - al2 * bl1;
+		const s = (
+			-s1_y * (p0.x - p2.x) + s1_x * (p0.y - p2.y)
+		) / (-s2_x * s1_y + s1_x * s2_y);
+		const t = (
+			s2_x * (p0.y - p2.y) - s2_y * (p0.x - p2.x)
+		) / (-s2_x * s1_y + s1_x * s2_y);
 
-		if (determinant === 0) {
-			return undefined; // Lines are parallel
+		if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+		{
+			// Collision detected
+			return new Point(
+				p0.x + (t * s1_x),
+				p0.y + (t * s1_y)
+			);
 		}
 
-		return new Point(
-			(bl2 * cl1 - bl1 * cl2)/determinant,
-			(al1 * cl2 - al2 * cl1)/determinant,
-		);
+		return null; // No collision
 	}
 }
-
-
