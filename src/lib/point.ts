@@ -18,4 +18,8 @@ export class Point implements IPoint {
 	isEqual (p: Point): boolean {
 		return p.x === this.x && p.y === this.y;
 	}
+
+	clone (): Point {
+		return new Point(this.x, this.y);
+	}
 }
