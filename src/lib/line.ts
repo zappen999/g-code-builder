@@ -5,6 +5,8 @@ export interface ILine {
 	end: IPoint;
 }
 
+const EPSILON = 0.000001;
+
 export class Line implements ILine {
 	constructor (
 		public start: IPoint,
@@ -16,6 +18,13 @@ export class Line implements ILine {
 	): Point|null {
 		const { start: p0, end: p1 } = line1;
 		const { start: p2, end: p3 } = line2;
+
+		const alt1 = Line.isPointOnLine(line1, line2.start);
+		const alt2 = Line.isPointOnLine(line1, line2.end);
+
+		if (alt1 || alt2) {
+			return null;
+		}
 
 		const s1_x = p1.x - p0.x;
 		const s1_y = p1.y - p0.y;
@@ -39,5 +48,17 @@ export class Line implements ILine {
 		}
 
 		return null; // No collision
+	}
+
+	static isPointOnLine (line: ILine, p: IPoint): boolean {
+		const aTmpY = new Point(
+			line.end.x - line.start.x,
+			line.end.y - line.start.y
+		);
+
+		const bTmp = new Point(p.x - line.start.x, p.y - line.start.y);
+		const r = aTmpY.crossProduct(bTmp);
+
+		return Math.abs(r) < EPSILON;
 	}
 }

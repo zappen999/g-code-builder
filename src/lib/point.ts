@@ -22,4 +22,8 @@ export class Point implements IPoint {
 	clone (): Point {
 		return new Point(this.x, this.y);
 	}
+
+	crossProduct(b: IPoint): number {
+		return this.x * b.y - b.x * this.y;
+	}
 }

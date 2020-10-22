@@ -22,6 +22,10 @@ describe('Line', () => {
 			{ x: -10, y: -25 },
 			{ x: -10, y: 25 }
 		);
+		const startingOnBase = new Line(
+			{ x: 25, y: 0 },
+			{ x: 25, y: 50 }
+		);
 
 		it('should return null when there\'s no intersection', () => {
 			const res = Line.getLineIntersection(base, notIntersecting);
@@ -54,6 +58,16 @@ describe('Line', () => {
 			);
 
 			expect(res).to.equal(null);
+		});
+
+		it('should return null when line starts somewhere at base', () => {
+			const res = Line.getLineIntersection(
+				base,
+				startingOnBase
+			);
+
+			expect(res).to.equal(null);
+
 		});
 	});
 });
