@@ -122,11 +122,13 @@ export class ChangeToolCommand
 {
 	toString(): string {
 		const { toolName, toolNumber } = this.arg;
-		let result = `(Tool change: ${toolName})\nM6`;
+		let result = 'M6';
 
 		if (isSet(toolNumber)) {
 			result += ` T${toolNumber}`;
 		}
+
+		result += ` (${toolName})`;
 
 		return result;
 	}
