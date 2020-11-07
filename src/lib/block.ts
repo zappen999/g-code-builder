@@ -1,6 +1,6 @@
 import type { Plane, Dir, CoordinateSystem, Unit } from './enums';
 import type { XYZ } from './types';
-import type { Point } from './point';
+import type { Point, IPoint } from './point';
 import {
 	Command,
 	PlaneCommand,
@@ -103,8 +103,8 @@ export class Block {
 
 	arc(arg: {
 		dir: Dir,
-		end: Point,
-		around: Point, // offset to center relative to start (current) position.
+		end: IPoint,
+		around: IPoint, // offset to center relative to start (current) position
 		feedrate?: number
 	}): Block {
 		return this.addCommand(new ArcCommand(arg));

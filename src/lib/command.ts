@@ -1,5 +1,5 @@
 import type { XYZ } from './types';
-import type { Point } from './point';
+import type { IPoint } from './point';
 import { Plane, Unit, Dir, CoordinateSystem, AxisDir } from './enums';
 import { isSet } from './helpers';
 
@@ -237,8 +237,8 @@ export class MoveRapidCommand
 
 export type ArcArg = {
 	dir: Dir;
-	end: Point;
-	around: Point;
+	end: IPoint;
+	around: IPoint;
 	feedrate?: number;
 };
 
