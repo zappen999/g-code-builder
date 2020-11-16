@@ -110,24 +110,6 @@ export class Block {
 		return this.addCommand(new ArcCommand(arg));
 	}
 
-	// TODO: Implement this when getting tired of using 'arc' function.
-	arcByRadius(arg: {
-		dir: number | 'tangent',
-		rotation: Dir,
-		radius: number,
-		angle: number,
-	}): Block {
-		// Distance between start point and center point should be equal to the
-		// distance between end point and center point.
-		//
-		// Center point should be between start and end.
-		// We know starting point.
-		// We don't know the ending point.
-		//
-		// Calc the ending point by start point + radius + angle
-		return this;
-	}
-
 	stopSpindle(): Block {
 		return this.addCommand(new StopSpindleCommand());
 	}
