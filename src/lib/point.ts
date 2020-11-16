@@ -9,13 +9,13 @@ export class Point implements IPoint {
 		public y: number
 	) { }
 
-	distanceTo (p: Point): number {
+	distanceTo (p: IPoint): number {
 		return Math.sqrt(
 			Math.pow(p.x - this.x, 2) + Math.pow(p.y - this.y, 2)
 		);
 	}
 
-	isEqual (p: Point): boolean {
+	isEqual (p: IPoint): boolean {
 		return p.x === this.x && p.y === this.y;
 	}
 
