@@ -56,7 +56,7 @@ describe('Block', () => {
 
 	it('should support tool change', () => {
 		block!.changeTool('Drill');
-		expect(block!.toString()).to.equal('(Tool change: Drill)\nM6');
+		expect(block!.toString()).to.equal('M6 (Drill)');
 	});
 
 	it('should support comments', () => {
