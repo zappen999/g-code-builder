@@ -12,6 +12,7 @@ export class Line implements ILine {
 		public start: IPoint,
 		public end: IPoint
 	) { }
+
 	static getLineIntersection (
 		line1: ILine,
 		line2: ILine

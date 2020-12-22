@@ -20,7 +20,7 @@ export class BoreFactory {
 	constructor (
 		protected bore: Bore,
 		protected ctrl: ToolController,
-		protected thetaStep = 0.05,
+		protected thetaStep = 0.03,
 	) {
 		// For convenience
 		this.boreRadius = this.bore.diameter / 2;
