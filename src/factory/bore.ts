@@ -6,9 +6,6 @@ export interface Bore {
 	depth: number;
 }
 
-const CENTER = new Point(0, 0);
-const ONE_TURN_RADS = Math.PI * 2;
-
 // This job has it's own 'origin', it's up to the caller to offset the block to
 // wherever it's supposed to be in the program.
 export class BoreFactory {
@@ -20,7 +17,6 @@ export class BoreFactory {
 	constructor (
 		protected bore: Bore,
 		protected ctrl: ToolController,
-		protected thetaStep = 0.03,
 	) {
 		// For convenience
 		this.boreRadius = this.bore.diameter / 2;
@@ -44,42 +40,52 @@ export class BoreFactory {
 	}
 
 	protected makeSpiral (block: Block): Block {
-		let pos = new Point(0, 0);
+		const passes = Math.ceil(this.boreRadius / this.stepover);
 
-		for (let theta = 0;; theta += this.thetaStep) {
-			const revolutions = theta / ONE_TURN_RADS;
-			const distanceFromCenter = CENTER.distanceTo(pos);
+		for (let i = 1; i <= passes; i++) {
+			const lastPass = passes === i;
 
-			if (distanceFromCenter > this.maxTravel) {
-				const prevTheta = theta - this.thetaStep;
-				const nearestPointOnCircle = new Point(
-					this.maxTravel * Math.cos(prevTheta),
-					-this.maxTravel * Math.sin(prevTheta),
-				);
+			const b = new Block()
+				.comment('Go to the top')
+				.move({ x: 0, y: this.maxTravel }, this.ctrl.feedrate)
+				.comment('Arc from 0 -> 90 deg')
+				.arc({
+					dir: Dir.CW,
+					end: { x: this.maxTravel, y: 0 },
+					around: new Point(0, -this.maxTravel),
+					feedrate: this.ctrl.feedrate,
+				})
+				.comment('Arc from 90 -> 180 deg')
+				.arc({
+					dir: Dir.CW,
+					end: { x: 0, y: -this.maxTravel },
+					around: new Point(-this.maxTravel, 0),
+					feedrate: this.ctrl.feedrate,
+				})
+				.comment('Arc from 180 -> 270 deg')
+				.arc({
+					dir: Dir.CW,
+					end: { x: -this.maxTravel, y: 0 },
+					around: new Point(0, this.maxTravel),
+					feedrate: this.ctrl.feedrate,
+				})
+				.comment('Arc from 270 -> 360 deg')
+				.arc({
+					dir: Dir.CW,
+					end: { x: 0, y: this.maxTravel },
+					around: new Point(this.maxTravel, 0),
+					feedrate: this.ctrl.feedrate,
+				});
 
-				block
-					.move({ ...nearestPointOnCircle }, this.ctrl.feedrate)
-					.arc({
-						dir: Dir.CW,
-						end: nearestPointOnCircle,
-						around: new Point(
-							-nearestPointOnCircle.x,
-							-nearestPointOnCircle.y,
-						),
-						feedrate: this.ctrl.feedrate,
-					})
-					.moveRapid({ ...CENTER });
-				break;
+			if (lastPass) {
+				b
+					.comment('Move to middle')
+					.moveRapid({ x: 0, y: 0 });
 			}
 
-			const spiralEffect = revolutions * this.stepover;
-
-			pos = new Point(
-				spiralEffect * Math.cos(-theta),
-				spiralEffect * Math.sin(-theta),
-			);
-
-			block.move({ ...pos }, this.ctrl.feedrate);
+			const scale = i / passes;
+			b.scale({ x: scale, y: scale });
+			block.merge(b);
 		}
 
 		return block;
